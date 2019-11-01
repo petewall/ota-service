@@ -1,0 +1,9 @@
+[
+    {
+        "type": "environment_variable",
+        "name": "DATA_DIR"
+    }, {
+        "type": "environment_variable",
+        "name": "PORT"
+    }
+]
