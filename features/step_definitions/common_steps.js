@@ -12,7 +12,7 @@ const debug = require("debug")
 Before(async function () {
   debug.enable("otaService:*")
   this.tmpDir = await fs.mkdtemp("tmp-features-")
-  this.binDir = path.join(this.tmpDir, "binaries")
+  this.binDir = path.join(process.cwd(), this.tmpDir, "binaries")
   await fs.mkdir(this.binDir)
 })
 

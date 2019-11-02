@@ -8,6 +8,19 @@ const path = require("path")
 let devices = {}
 let binaries = {}
 
+if (!process.env.PORT) {
+    console.error("No port defined.")
+    process.exit(1)
+}
+if (!process.env.DATA_DIR) {
+    console.error("No data path defined.")
+    process.exit(1)
+}
+if (!path.isAbsolute(process.env.DATA_DIR)) {
+    console.error("DATA_DIR must be an absolute path.")
+    process.exit(1)
+}
+
 function readBinariesFromDisk() {
     glob(path.join(process.env.DATA_DIR, "*", "/*"), function (err, files) {
         binaries = {}
@@ -38,7 +51,7 @@ app.get("/binary", (req, res) => {
     // console.log("binaries: ")
     // console.log(binaries)
     if (binaries[device] && binaries[device][0].version > version) {
-        let binaryPath = path.join(process.cwd(), process.env.DATA_DIR, device, binaries[device][0].filename)
+        let binaryPath = path.join(process.env.DATA_DIR, device, binaries[device][0].filename)
         // console.log(`sending ${binaryPath}`)
         res.sendFile(binaryPath)
         devices[device] = { device, version: binaries[device][0].version }
@@ -51,12 +64,4 @@ app.get("/binaries", (req, res) => {
     res.json(binaries)
 })
 
-if (!process.env.PORT) {
-    console.error("No port defined.")
-    process.exit(1)
-}
-if (!process.env.DATA_DIR) {
-    console.error("No data path defined.")
-    process.exit(1)
-}
 app.listen(process.env.PORT, () => console.log(`OTA Service listening on port ${process.env.PORT}!`))
