@@ -5,33 +5,51 @@ const app = express()
 const glob = require("glob")
 const path = require("path")
 
-app.get('/binaries', (req, res) => {
-    glob(path.join(process.env.DATA_DIR, "*", "/*.bin"), function (err, files) {
-        let results = {}
+let devices = {}
+let binaries = {}
+
+function readBinariesFromDisk() {
+    glob(path.join(process.env.DATA_DIR, "*", "/*"), function (err, files) {
+        binaries = {}
         for (let file of files) {
             let parts = file.split(path.sep)
             let device = parts[parts.length - 2]
             let binary = parts[parts.length - 1]
-            results[device] = [ binary ]
+            binaries[device] = [{
+                version: binary.split("-")[1],
+                filename: binary,
+            }]
         }
-        res.json(results)
     })
+}
+readBinariesFromDisk()
+
+app.get("/devices", (req, res) => {
+    res.json(devices)
 })
 
-// app.get("/updates", (req, res) => {
-//     // [HTTP_USER_AGENT] => ESP8266-http-Update
-//     // [HTTP_X_ESP8266_STA_MAC] => 18:FE:AA:AA:AA:AA
-//     // [HTTP_X_ESP8266_AP_MAC] => 1A:FE:AA:AA:AA:AA
-//     // [HTTP_X_ESP8266_FREE_SPACE] => 671744
-//     // [HTTP_X_ESP8266_SKETCH_SIZE] => 373940
-//     // [HTTP_X_ESP8266_SKETCH_MD5] => a56f8ef78a0bebd812f62067daf1408a
-//     // [HTTP_X_ESP8266_CHIP_SIZE] => 4194304
-//     // [HTTP_X_ESP8266_SDK_VERSION] => 1.3.0
-//     // [HTTP_X_ESP8266_VERSION] => DOOR-7-g14f53a19
+app.get("/binary", (req, res) => {
+    const device = req.header("HTTP_X_ESP8266_VERSION").split("-")[0]
+    const version = req.header("HTTP_X_ESP8266_VERSION").split("-")[1]
+    devices[device] = { device, version }
 
-//     // const currentVersion = req.header("HTTP_X_ESP8266_SDK_VERSION")
-//     res.sendStatus(304)
-// })
+    // console.log(`device: ${device}`)
+    // console.log(`version: ${version}`)
+    // console.log("binaries: ")
+    // console.log(binaries)
+    if (binaries[device] && binaries[device][0].version > version) {
+        let binaryPath = path.join(process.cwd(), process.env.DATA_DIR, device, binaries[device][0].filename)
+        // console.log(`sending ${binaryPath}`)
+        res.sendFile(binaryPath)
+        devices[device] = { device, version: binaries[device][0].version }
+    } else {
+        res.sendStatus(304)
+    }
+})
+
+app.get("/binaries", (req, res) => {
+    res.json(binaries)
+})
 
 if (!process.env.PORT) {
     console.error("No port defined.")
@@ -42,15 +60,3 @@ if (!process.env.DATA_DIR) {
     process.exit(1)
 }
 app.listen(process.env.PORT, () => console.log(`OTA Service listening on port ${process.env.PORT}!`))
-
-
-// EnvironmentVariable for:
-// binary dir
-
-// Endpoints for:
-// get List types
-// get List versions for type
-// get List known devices and their versions
-// put add binary
-
-
