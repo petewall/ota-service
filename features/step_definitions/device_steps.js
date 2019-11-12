@@ -21,6 +21,13 @@ When("I ask for the list of devices", function (done) {
   })
 })
 
+When("I assign a firmware type of {} to {}", function (type, mac, done) {
+  request.post(`http://localhost:${this.port}/api/assign?firmware=${type}&mac=${mac}`, (err, response, body) => {
+    this.requestResult = { err, response, body }
+    done()
+  })
+})
+
 Then("I receive an empty hash", function () {
   assert.equal(this.requestResult.body, "{}")
 })
@@ -31,11 +38,11 @@ Then("I receive a hash with {} entr{}", function (size, dummy) {
 })
 
 Then("it contains a device with mac {} running {} version {}", function (mac, type, version) {
-  assert.deepEqual(this.result[mac], {
-    mac,
-    firmwareType: type,
-    firmwareVersion: version
-  })
+  assert.equal(this.result[mac].mac, mac)
+  assert.equal(this.result[mac].firmwareType, type)
+  assert.equal(this.result[mac].firmwareVersion, version)
+  assert.equal(this.result[mac].assignedFirmware, type)
+  assert(Date.now() - new Date(this.result[mac].lastUpdated).getTime() < 1000)
 })
 
 Then("the service responds with no update", function () {

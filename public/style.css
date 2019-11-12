@@ -3,6 +3,14 @@ table {
     width: 100%;
 }
 
+table caption {
+    visibility: hidden;
+}
+
+table.loading caption {
+    visibility: visible;
+}
+
 table td {
     border: 1px solid grey;
 }

@@ -5,12 +5,10 @@ const request = require("request")
 const path = require("path")
 
 function eventually(check) {
-  console.log("eventually")
   return new Promise((resolve, reject) => {
     let count = 0;
     let checkerId = setInterval(() => {
       if (check()) {
-        console.log("resolved")
         resolve()
         clearInterval(checkerId)
       } else {
@@ -26,11 +24,10 @@ function eventually(check) {
 
 Given("an empty firmware directory", function () {})
 
-async function addBinary(tmpDir, type, version, data) {
+async function addBinary(tmpDir, type, version) {
   let firmwareTypeDir = path.join(tmpDir, "firmware", type)
   let firmwareVersionDir = path.join(tmpDir, "firmware", type, version)
   let firmwareBinaryPath = path.join(tmpDir, "firmware", type, version, `${type}-${version}.bin`)
-  data = data || "firmware-data"
   try {
     await fs.stat(firmwareTypeDir)
   } catch (e) {
@@ -38,9 +35,7 @@ async function addBinary(tmpDir, type, version, data) {
     await fs.mkdir(firmwareTypeDir)
   }
   await fs.mkdir(firmwareVersionDir)
-  console.log(`Adding ${firmwareBinaryPath}`)
-  await fs.writeFile(firmwareBinaryPath, data)
-  console.log("done")
+  await fs.writeFile(firmwareBinaryPath, `data-for-${type}-${version}`)
 }
 
 Given("there is a firmware binary for {} with a version of {}", async function (type, version) {
@@ -80,4 +75,8 @@ Then("it contains a firmware for {} with a version of {}", function (type, versi
 
 Then("the service detects {} binar{}", async function (count, dummy) {
   await eventually(() => this.serviceStdout.indexOf(`[Firmware] Firmware loaded: ${count} binaries`) >= 0)
+})
+
+Then("the service sends the firmware binary for {} with version {}", function (type, version) {
+  assert.equal(this.requestResult.body, `data-for-${type}-${version}`)
 })

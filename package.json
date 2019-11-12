@@ -11,11 +11,11 @@
   "author": "Pete Wall <pete@petewall.net>",
   "license": "ISC",
   "dependencies": {
+    "chokidar": "^3.3.0",
     "express": "^4.17.1",
     "glob": "^7.1.6",
     "http-status": "^1.4.0",
-    "semver": "^6.3.0",
-    "watch": "^1.0.2"
+    "semver": "^6.3.0"
   },
   "devDependencies": {
     "cucumber": "^6.0.4",

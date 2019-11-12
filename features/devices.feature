@@ -23,7 +23,7 @@ Feature: Devices
     And an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     When I view the registry page
     Then the device list has 1 entry
-    And device list has a device with mac DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
+    And the device list has a device with mac DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
 
   Scenario: Listing with multiple devices
     Given the OTA service is running
@@ -41,5 +41,5 @@ Feature: Devices
     And an update request comes from DEVICE_2 running SAMPLE_FIRMWARE version 1.0.1
     When I view the registry page
     Then the device list has 2 entries
-    And device list has a device with mac DEVICE_1 running SAMPLE_FIRMWARE version 1.0.0
-    And device list has a device with mac DEVICE_2 running SAMPLE_FIRMWARE version 1.0.1
+    And the device list has a device with mac DEVICE_1 running SAMPLE_FIRMWARE version 1.0.0
+    And the device list has a device with mac DEVICE_2 running SAMPLE_FIRMWARE version 1.0.1

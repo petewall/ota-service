@@ -1,36 +1,39 @@
+const chokidar = require("chokidar")
 const glob = require("glob")
 const semver = require("semver")
 const path = require("path")
-const watch = require("watch")
 
 class Firmware {
     constructor(dataPath) {
         this.glob = require("glob")
+        this.firmwareGlob = path.join(dataPath, "firmware", "*", "*", "*.bin")
         this.loadFromPath(dataPath)
-        watch.watchTree(path.join(dataPath, "firmware"), (a) => {
-            console.log("[Firmware] Detected firmware changes")
-            console.log(dataPath)
-            console.log(a)
-            this.loadFromPath(dataPath)
+        let watcher = chokidar.watch(this.firmwareGlob)
+
+        watcher.on("add", (file) => {
+            console.log(`[Firmware] Binary file added: ${file}`)
+            this.loadFromPath()
+        })
+        watcher.on("unlink", (file) => {
+            console.log(`[Firmware] Binary file removed: ${file}`)
+            this.loadFromPath()
         })
     }
 
-    loadFromPath(dataPath) {
+    loadFromPath() {
         let newFirmware = []
         console.log("[Firmware] Loading firmware from the data directory...")
-        glob(path.join(dataPath, "firmware", "*", "*", "*.bin"), (err, files) => {
+        glob(this.firmwareGlob, (err, files) => {
             if (err) {
                 console.error("[Firmware] failed to find firmware files: ", err)
                 process.exit(1)
             }
 
-            console.log(files)
-
             for (let file of files) {
                 let parts = file.split(path.sep)
                 let version = parts[parts.length - 2]
                 if (!semver.valid(version)) {
-                    console.error(`Invalid version for file: ${file}`)
+                    console.error(`[Firmware] Invalid version for file: ${file}`)
                 } else {
                     console.log(`[Firmware]    ${file}`)
                     newFirmware.push({

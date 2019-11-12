@@ -3,12 +3,18 @@ class Devices {
         this.devices = {}
     }
 
-    registerDevice(mac, firmwareType, firmwareVersion) {
-        this.devices[mac] = {
-            mac,
-            firmwareType,
-            firmwareVersion
+    updateDevice(mac, firmwareType, firmwareVersion, state) {
+        if (!this.devices[mac]) {
+            this.devices[mac] = {
+                mac,
+                assignedFirmware: firmwareType,
+                state: "new"
+            }
         }
+        this.devices[mac].firmwareType = firmwareType
+        this.devices[mac].firmwareVersion = firmwareVersion
+        this.devices[mac].lastUpdated = new Date()
+        return this.devices[mac]
     }
 
     get(mac) {
@@ -17,6 +23,16 @@ class Devices {
 
     getAll() {
         return this.devices
+    }
+
+    setState(mac, state) {
+        console.log(`[Device] Setting ${mac} to state ${state}`)
+        this.devices[mac].state = state
+    }
+
+    assignFirmware(mac, type) {
+        console.log(`[Device] Setting ${mac} to firmware ${type}`)
+        this.devices[mac].assignedFirmware = type
     }
 }
 
