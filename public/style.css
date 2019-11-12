@@ -1,0 +1,16 @@
+table {
+    border: 1px solid black;
+    width: 100%;
+}
+
+table td {
+    border: 1px solid grey;
+}
+
+table td input {
+    width: 100%;
+}
+
+table .loading {
+    text-align: center;
+}

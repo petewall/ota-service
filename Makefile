@@ -21,4 +21,4 @@ build: lint deps
 	docker build --tag petewall/ota-service --file Dockerfile .
 
 run:
-	PORT=3000 index./.js
+	PORT=8266 DATA_DIR=$(shell pwd)/data ./index.js

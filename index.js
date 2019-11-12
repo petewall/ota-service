@@ -1,17 +1,19 @@
 #!/usr/local/bin/node
 
 const express = require("express")
+const status  = require("http-status")
 const app = express()
-const glob = require("glob")
+const semver = require("semver")
 const path = require("path")
 
-let devices = {}
-let binaries = {}
+const Devices = require("./devices.js")
+const Firmware = require("./firmware.js")
 
 if (!process.env.PORT) {
     console.error("No port defined.")
     process.exit(1)
 }
+
 if (!process.env.DATA_DIR) {
     console.error("No data path defined.")
     process.exit(1)
@@ -21,47 +23,45 @@ if (!path.isAbsolute(process.env.DATA_DIR)) {
     process.exit(1)
 }
 
-function readBinariesFromDisk() {
-    glob(path.join(process.env.DATA_DIR, "*", "/*"), function (err, files) {
-        binaries = {}
-        for (let file of files) {
-            let parts = file.split(path.sep)
-            let device = parts[parts.length - 2]
-            let binary = parts[parts.length - 1]
-            binaries[device] = [{
-                version: binary.split("-")[1],
-                filename: binary,
-            }]
-        }
-    })
-}
-readBinariesFromDisk()
+let devices = new Devices()
+let firmwareLibrary = new Firmware(process.env.DATA_DIR)
 
-app.get("/devices", (req, res) => {
-    res.json(devices)
+app.get("/api/firmware", (req, res) => {
+    res.json(firmwareLibrary.getAll())
 })
 
-app.get("/binary", (req, res) => {
-    const device = req.header("HTTP_X_ESP8266_VERSION").split("-")[0]
-    const version = req.header("HTTP_X_ESP8266_VERSION").split("-")[1]
-    devices[device] = { device, version }
+app.get("/api/devices", (req, res) => {
+    res.json(devices.getAll())
+})
 
-    // console.log(`device: ${device}`)
-    // console.log(`version: ${version}`)
-    // console.log("binaries: ")
-    // console.log(binaries)
-    if (binaries[device] && binaries[device][0].version > version) {
-        let binaryPath = path.join(process.env.DATA_DIR, device, binaries[device][0].filename)
-        // console.log(`sending ${binaryPath}`)
-        res.sendFile(binaryPath)
-        devices[device] = { device, version: binaries[device][0].version }
-    } else {
-        res.sendStatus(304)
+app.get("/api/update/", (req, res) => {
+    console.log(req.headers)
+    let mac = req.get("x-esp8266-sta-mac")
+    let currentType = req.query.firmware
+    let currentVersion = req.query.version
+    console.log(`New request from ${mac}: type: ${currentType} version: ${currentVersion}`)
+
+    let device = devices.get(mac)
+    if (!device) {
+        devices.registerDevice(mac, currentType, currentVersion)
+        device = devices.get(mac)
     }
+
+    let latestFirmware = firmwareLibrary.getLatestForType(device.firmwareType)
+    if (!latestFirmware) {
+        console.log(`No firmware found for ${device.firmwareType}`)
+        return res.sendStatus(status.NOT_MODIFIED)
+    }
+
+    if (semver.gt(latestFirmware.version, currentVersion)) {
+        console.log("Sending new firmware: ", latestFirmware)
+        return res.sendFile(latestFirmware.file)
+    }
+
+    console.log(`No firmware to send`)
+    res.sendStatus(status.NOT_MODIFIED)
 })
 
-app.get("/binaries", (req, res) => {
-    res.json(binaries)
-})
+app.use(express.static("public"))
 
 app.listen(process.env.PORT, () => console.log(`OTA Service listening on port ${process.env.PORT}!`))

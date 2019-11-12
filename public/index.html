@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>OTA Service</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <h1>Devices</h1>
+    <table id="deviceTable">
+      <tr>
+        <th>MAC</th>
+        <th>Firmware</th>
+        <th>Version</th>
+        <th>Sensor ID</th>
+      </tr>
+      <tr><td class="loading" colspan="4">Loading</td></tr>
+    </table>
+
+    <h1>Firmware</h1>
+    <table id="firmwareTable">
+      <tr>
+        <th>Name</th>
+        <th>Version</th>
+        <th>File</th>
+        <th>Devices</th>
+      </tr>
+      <tr><td class="loading" colspan="4">Loading</td></tr>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="loadData.js"></script>
+  </body>
+</html>
