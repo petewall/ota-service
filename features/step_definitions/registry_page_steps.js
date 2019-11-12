@@ -1,5 +1,6 @@
 const { Then, When } = require("cucumber")
 const { Builder, By, until } = require("selenium-webdriver")
+const { Options } = require("selenium-webdriver/chrome")
 const assert = require("assert")
 
 async function findDeviceInTable(driver, mac) {
@@ -21,7 +22,14 @@ When("I view the registry page", async function () {
   if (this.driver) {
     await this.driver.quit();
   }
-  this.driver = await new Builder().forBrowser("chrome").build()
+
+  let builder = new Builder().forBrowser("chrome")
+  if (process.env.CI == "true") {
+    let options = new Options()
+    options.headless()
+    builder.setChromeOptions(options)
+  }
+  this.driver = await builder.build()
   await this.driver.get(`http://localhost:${this.port}`)
   
   let deviceTableLoading = await this.driver.findElement(By.css("#deviceTable caption"))
