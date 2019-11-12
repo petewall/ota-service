@@ -29,6 +29,7 @@ When("I view the registry page", async function () {
   if (!this.driver) {
     let builder = new Builder().forBrowser("chrome")
     if (process.env.CI == "true") {
+      console.log("running in headless mode")
       let options = new Options()
       options.headless()
       options.addArguments("--disable-gpu")
