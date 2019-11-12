@@ -6,6 +6,12 @@ Feature: Firmware
     Then the request is successful
     And I receive an empty list
 
+  Scenario: Listing with no firmware on the registry page
+    Given an empty firmware directory
+    And the OTA service is running
+    When I view the registry page
+    And the firmware list is empty
+
   Scenario: Listing with one firmware
     Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
     And the OTA service is running
@@ -50,8 +56,6 @@ Feature: Firmware
   #   And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
 
   Scenario: Removing a firmware binary
-
-  Scenario: Viewing firmware on the registry page
 
   Scenario: Adding a firmware binary updates the registry page
 

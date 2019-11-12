@@ -62,7 +62,6 @@ Then("I receive an empty list", function () {
   assert.equal(this.requestResult.body, "[]")
 })
 
-// TODO: When I have internet, find out how to replace dummy with a regex
 Then("I receive a list with {} entr{}", function (size, dummy) {
   this.result = JSON.parse(this.requestResult.body)
   assert.equal(this.result.length, size)

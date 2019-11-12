@@ -1,12 +1,13 @@
-const assert = require("assert")
-const { Before, After, Given, When, Then } = require("cucumber")
-const { spawn } = require("child_process")
-const fs = require("fs").promises
-const path = require("path")
 const util = require("util")
-const rimraf = util.promisify(require("rimraf"))
-const getPort = require("get-port")
+const { Before, After, Given, When, Then } = require("cucumber")
+const assert = require("assert")
 const debug = require("debug")
+const fs = require("fs").promises
+const getPort = require("get-port")
+const path = require("path")
+const rimraf = util.promisify(require("rimraf"))
+const spawn = require("child_process").spawn
+const status  = require("http-status")
 
 Before(async function () {
   debug.enable("otaService:*")
@@ -15,6 +16,10 @@ Before(async function () {
 })
 
 After(async function () {
+  if (this.driver) {
+    await this.driver.quit();
+  }
+
   if (this.otaService) {
     this.otaService.kill()
   }
@@ -50,5 +55,5 @@ Given("the OTA service is running", function (done) {
 
 Then("the request is successful", function () {
   assert.equal(this.requestResult.err, null)
-  assert.equal(this.requestResult.response.statusCode, 200)
+  assert.equal(this.requestResult.response.statusCode, status.OK)
 })

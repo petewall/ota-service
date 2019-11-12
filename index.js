@@ -1,10 +1,10 @@
 #!/usr/local/bin/node
 
 const express = require("express")
-const status  = require("http-status")
 const app = express()
-const semver = require("semver")
 const path = require("path")
+const semver = require("semver")
+const status  = require("http-status")
 
 const Devices = require("./devices.js")
 const Firmware = require("./firmware.js")

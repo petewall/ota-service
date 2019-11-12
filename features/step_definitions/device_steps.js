@@ -1,6 +1,7 @@
 const { Given, Then, When } = require("cucumber")
 const assert = require("assert")
 const request = require("request")
+const status  = require("http-status")
 
 Given("an update request comes from {} running {} version {}", function (mac, type, version, done) {
   request.get(`http://localhost:${this.port}/api/update?firmware=${type}&version=${version}`, {
@@ -24,7 +25,6 @@ Then("I receive an empty hash", function () {
   assert.equal(this.requestResult.body, "{}")
 })
 
-// TODO: When I have internet, find out how to replace dummy with a regex
 Then("I receive a hash with {} entr{}", function (size, dummy) {
   this.result = JSON.parse(this.requestResult.body)
   assert.equal(Object.keys(this.result).length, size)
@@ -36,4 +36,9 @@ Then("it contains a device with mac {} running {} version {}", function (mac, ty
     firmwareType: type,
     firmwareVersion: version
   })
+})
+
+Then("the service responds with no update", function () {
+  assert.equal(this.requestResult.err, null)
+  assert.equal(this.requestResult.response.statusCode, status.NOT_MODIFIED)
 })
