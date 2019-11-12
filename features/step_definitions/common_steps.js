@@ -1,5 +1,5 @@
 const util = require("util")
-const { Before, After, Given, When, Then } = require("cucumber")
+const { Before, After, Given, Then } = require("cucumber")
 const assert = require("assert")
 const debug = require("debug")
 const fs = require("fs").promises
@@ -16,10 +16,6 @@ Before(async function () {
 })
 
 After(async function () {
-  if (this.driver) {
-    await this.driver.quit();
-  }
-
   if (this.otaService) {
     this.otaService.kill()
   }
