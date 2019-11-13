@@ -39,7 +39,7 @@ Given("the OTA service is running", function (done) {
     })
     this.otaService.stdout.on("data", (data) => {
       stdout(data.toString())
-      if (!started && data.indexOf("OTA Service listening on port") >= 0) {
+      if (!started && data.indexOf("[Firmware] Firmware loaded") >= 0) {
         started = true
         done()
       }

@@ -34,7 +34,7 @@ When("I view the registry page", async function () {
       options.addArguments("--disable-dev-shm-usage")
       options.addArguments("--disable-extensions")
       options.addArguments("--disable-gpu")
-      options.addArguments("--no-sandboxex")
+      options.addArguments("--no-sandbox")
       builder.setChromeOptions(options)
     }
     this.driver = await builder.build()  
