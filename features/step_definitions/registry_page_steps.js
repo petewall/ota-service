@@ -32,6 +32,7 @@ When("I view the registry page", async function () {
       let options = new Options()
       options.headless()
       options.addArguments("--disable-dev-shm-usage")
+      options.addArguments("--disable-extensions")
       options.addArguments("--disable-gpu")
       options.addArguments("--no-sandboxex")
       builder.setChromeOptions(options)
