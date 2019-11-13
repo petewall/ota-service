@@ -55,7 +55,6 @@ function addFirmware(firmware) {
       $("<td>", { text: firmware.type }),
       $("<td>", { text: firmware.version }),
       $("<td>", { text: firmware.filename }),
-      $("<td>", { text: "---" })
     )
   )
 }
