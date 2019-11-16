@@ -10,7 +10,7 @@ const spawn = require("child_process").spawn
 const status  = require("http-status")
 
 Before(async function () {
-  // debug.enable("otaService:*")
+  debug.enable("otaService:*")
   this.tmpDir = await fs.mkdtemp("tmp-features-")
   await fs.mkdir(path.join(this.tmpDir, "firmware"))
 })
