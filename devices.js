@@ -3,7 +3,7 @@ class Devices {
         this.devices = {}
     }
 
-    updateDevice(mac, firmwareType, firmwareVersion, state) {
+    updateDevice(mac, firmwareType, firmwareVersion) {
         if (!this.devices[mac]) {
             this.devices[mac] = {
                 mac,

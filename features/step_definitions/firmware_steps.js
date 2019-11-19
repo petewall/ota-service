@@ -1,29 +1,12 @@
 const { Given, Then, When } = require("cucumber")
 const assert = require("assert")
+const eventually = require("./eventually.js")
 const fs = require("fs").promises
 const util = require("util")
 const glob = util.promisify(require("glob"))
 const mkdir = util.promisify(require("mkdirp"))
 const request = require("request")
 const path = require("path")
-
-function eventually(check) {
-  return new Promise((resolve, reject) => {
-    let count = 0;
-    let checkerId = setInterval(() => {
-      if (check()) {
-        resolve()
-        clearInterval(checkerId)
-      } else {
-        count += 1
-        if (count >= 10) {
-          reject()
-          clearInterval(checkerId)
-        }
-      }
-    }, 100)
-  })
-}
 
 Given("an empty firmware directory", function () {})
 
@@ -93,6 +76,4 @@ Then("the service sends the firmware binary for {} with version {}", function (t
 Then("the a binary file for {} with a version of {} exists in the firmware directory", async function (type, version) {
   let files = await glob(path.join(this.tmpDir, "firmware", type, version, "*.bin"))
   assert.equal(files.length, 1)
-  console.log("File contents:")
-  console.log((await fs.readFile(files[0])).toString())
 })

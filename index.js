@@ -85,4 +85,13 @@ app.post("/api/assign", (req, res) => {
 
 app.use(express.static("public"))
 
+app.set("view engine", "ejs");
+app.get("/", (req, res) => {
+  res.render("index", {
+    devices: devices.getAll(),
+    allFirmware: firmwareLibrary.getAll(),
+    firmwareTypes: firmwareLibrary.getAllTypes()
+  });
+});
+
 app.listen(process.env.PORT, () => console.log(`OTA Service listening on port ${process.env.PORT}!`))

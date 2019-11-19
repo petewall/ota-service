@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <title>OTA Service</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <!-- Favicons from https://favicon.io/favicon-generator/?t=W&ff=Merienda+One&fs=110&fc=%23FFF&b=rounded&bc=%230A5 -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  </head>
+  <body>
+    <h1>Devices</h1>
+    <table id="deviceTable" class="loading">
+      <tr>
+        <th>MAC</th>
+        <th>Firmware</th>
+        <th>Version</th>
+        <th>Last Check</th>
+        <th>State</th>
+        <th>Assigned Firmware</th>
+      </tr>
+      <% Object.keys(devices).forEach((mac) => { %>
+        <tr id="<%= mac %>">
+          <td><%= mac %></td>
+          <td><%= devices[mac].firmwareType %></td>
+          <td><%= devices[mac].firmwareVersion %></td>
+          <td><%= devices[mac].lastUpdated %></td>
+          <td><%= devices[mac].state %></td>
+          <td>
+            <select class="firmwareSelector">
+              <option></option>
+              <% firmwareTypes.forEach((type) => { %>
+                <option value="<%= type %>"  <% if (devices[mac].firmwareType == type) { %>selected="selected"<% } %>>
+                  <%= type %>
+                </option>
+              <% }) %>
+            </select>
+          </td>
+        </tr>
+      <% }) %>
+    </table>
+
+    <h1>Firmware</h1>
+    <table id="firmwareTable" class="loading">
+      <tr>
+        <th>Name</th>
+        <th>Version</th>
+        <th>File</th>
+        <th>Size</th>
+      </tr>
+      <% allFirmware.forEach((firmware) => { %>
+        <tr>
+          <td><%= firmware.type %></td>
+          <td><%= firmware.version %></td>
+          <td><%= firmware.file %></td>
+          <td><%= firmware.size %></td>
+        </tr>
+      <% }) %>
+    </table>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="firmwareDropdown.js"></script>
+  </body>
+</html>

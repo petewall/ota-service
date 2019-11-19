@@ -2,6 +2,7 @@ const { Before, After, Then, When } = require("cucumber")
 const { Builder, By, until } = require("selenium-webdriver")
 const { Options } = require("selenium-webdriver/chrome")
 const assert = require("assert")
+const debug = require("debug")
 
 async function findDeviceInTable(driver, mac) {
   let rows = await driver.findElements(By.css("#deviceTable tr"))
@@ -20,6 +21,7 @@ async function findDeviceInTable(driver, mac) {
 
 After(async function () {
   if (this.driver) {
+    debug("browser")(await this.driver.manage().logs().get("browser"))
     await this.driver.quit();
     this.driver = null
   }
@@ -41,11 +43,7 @@ When("I view the registry page", async function () {
   }
 
   await this.driver.get(`http://localhost:${this.port}`)
-  
-  let deviceTableLoading = await this.driver.findElement(By.css("#deviceTable caption"))
-  let firmwareTableLoading = await this.driver.findElement(By.css("#firmwareTable caption"))
-  await this.driver.wait(until.elementIsNotVisible(deviceTableLoading), 1000);
-  await this.driver.wait(until.elementIsNotVisible(firmwareTableLoading), 1000);
+  // await new Promise((resolve) => { setTimeout(resolve, 500)})
 })
 
 When("I select {} from the dropdown of firmware for {} on the registry page", async function (type, mac) {

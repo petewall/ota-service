@@ -1,5 +1,6 @@
 const { Given, Then, When } = require("cucumber")
 const assert = require("assert")
+const eventually = require("./eventually.js")
 const request = require("request")
 const status  = require("http-status")
 
@@ -26,6 +27,10 @@ When("I assign a firmware type of {} to {}", function (type, mac, done) {
     this.requestResult = { err, response, body }
     done()
   })
+})
+
+Then("the firmware {} is assigned to {}", async function (type, mac) {
+  await eventually(() => this.serviceStdout.indexOf(`[Device] Setting ${mac} to firmware ${type}`) >= 0)
 })
 
 Then("I receive an empty hash", function () {

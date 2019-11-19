@@ -64,6 +64,11 @@ class Firmware {
     return this.firmware
   }
 
+  getAllTypes() {
+    let typesSet = new Set(this.firmware.map(firmware => firmware.type))
+    return Array.from(typesSet.values()).sort()
+  }
+
   getAllForType(firmwareType) {
     return this.firmware.filter(firmware => firmware.type == firmwareType)
   }
