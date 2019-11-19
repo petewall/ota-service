@@ -27,18 +27,21 @@ class Firmware {
   async loadFromPath() {
     let newFirmware = []
     console.log("[Firmware] Loading firmware from the data directory...")
-    let files = await glob(this.firmwareGlob)
+    let firmwarePaths = await glob(this.firmwareGlob)
 
-    for (let file of files) {
-      let parts = file.split(path.sep)
+    for (let firmwarePath of firmwarePaths) {
+      let parts = firmwarePath.split(path.sep)
       let version = parts[parts.length - 2]
       if (!semver.valid(version)) {
-        console.error(`[Firmware] Invalid version for file: ${file}`)
+        console.error(`[Firmware] Invalid version for file: ${firmwarePath}`)
       } else {
-        console.log(`[Firmware]    ${file}`)
+        console.log(`[Firmware]    ${firmwarePath}`)
+
+        let stats = await fs.stat(firmwarePath)
         newFirmware.push({
-          file,
+          file: firmwarePath,
           filename: parts[parts.length - 1],
+          size: stats.size,
           type: parts[parts.length - 3],
           version
         })

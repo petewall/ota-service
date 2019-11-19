@@ -2,8 +2,8 @@
 
 const express = require("express")
 const app = express()
+const bodyParser = require("body-parser")
 const morgan = require("morgan")
-const multer = require("multer")
 const path = require("path")
 const semver = require("semver")
 const status  = require("http-status")
@@ -34,25 +34,11 @@ app.get("/api/firmware", (req, res) => {
   res.json(firmwareLibrary.getAll())
 })
 
-let storage = multer.diskStorage({
-  destination: function (req, file, callback) {
-    let type = req.query.type
-    let version = req.query.version
-    let directory = path.join(process.env.DATA_DIR, "firmware", type, version)
-    console.log(`saving file in ${directory}`)
-    callback(null, directory)
-  }
-})
-let upload = multer({ storage }).single("firmware_file")
-
-app.put("/api/firmware", (req, res) => {
-  upload(req, res, (err) => {
-    console.log("upload result:")
-    console.log(err)
-    if (!err) {
-      res.sendStatus(status.OK)
-    }
-  })
+app.put("/api/firmware", bodyParser.raw(), async (req, res) => {
+  let type = req.query.type
+  let version = req.query.version
+  await firmwareLibrary.addBinary(type, version, req.body)
+  res.sendStatus(status.OK)
 })
 
 app.get("/api/devices", (req, res) => {

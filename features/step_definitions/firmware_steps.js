@@ -51,9 +51,7 @@ When("a firmware binary for {} with a version of {} is added", async function (t
 
 When("I send a binary file for {} with a version of {}", function (type, version, done) {
   request.put(`http://localhost:${this.port}/api/firmware?type=${type}&version=${version}`, {
-    formData: {
-      firmware_file: "my-firmware-data"
-    }
+    body: "my-firmware-data",
   }, (err, response, body) => {
     this.requestResult = { err, response, body }
     done()
