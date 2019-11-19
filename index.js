@@ -2,6 +2,7 @@
 
 const express = require("express")
 const app = express()
+const bodyParser = require("body-parser")
 const morgan = require("morgan")
 const path = require("path")
 const semver = require("semver")
@@ -11,17 +12,17 @@ const Devices = require("./devices.js")
 const Firmware = require("./firmware.js")
 
 if (!process.env.PORT) {
-    console.error("No port defined.")
-    process.exit(1)
+  console.error("No port defined.")
+  process.exit(1)
 }
 
 if (!process.env.DATA_DIR) {
-    console.error("No data path defined.")
-    process.exit(1)
+  console.error("No data path defined.")
+  process.exit(1)
 }
 if (!path.isAbsolute(process.env.DATA_DIR)) {
-    console.error("DATA_DIR must be an absolute path.")
-    process.exit(1)
+  console.error("DATA_DIR must be an absolute path.")
+  process.exit(1)
 }
 
 let devices = new Devices()
@@ -30,7 +31,14 @@ let firmwareLibrary = new Firmware(process.env.DATA_DIR)
 app.use(morgan("combined"))
 
 app.get("/api/firmware", (req, res) => {
-    res.json(firmwareLibrary.getAll())
+  res.json(firmwareLibrary.getAll())
+})
+
+app.put("/api/firmware", bodyParser.raw(), async (req, res) => {
+  let type = req.query.type
+  let version = req.query.version
+  await firmwareLibrary.addBinary(type, version, req.body)
+  res.sendStatus(status.OK)
 })
 
 app.get("/api/devices", (req, res) => {
@@ -38,7 +46,6 @@ app.get("/api/devices", (req, res) => {
 })
 
 app.get("/api/update/", (req, res) => {
-    // console.log(req.headers)
     let mac = req.get("x-esp8266-sta-mac")
     let currentType = req.query.firmware
     let currentVersion = req.query.version

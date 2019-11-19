@@ -1,6 +1,9 @@
 const { Given, Then, When } = require("cucumber")
 const assert = require("assert")
 const fs = require("fs").promises
+const util = require("util")
+const glob = util.promisify(require("glob"))
+const mkdir = util.promisify(require("mkdirp"))
 const request = require("request")
 const path = require("path")
 
@@ -25,17 +28,10 @@ function eventually(check) {
 Given("an empty firmware directory", function () {})
 
 async function addBinary(tmpDir, type, version) {
-  let firmwareTypeDir = path.join(tmpDir, "firmware", type)
-  let firmwareVersionDir = path.join(tmpDir, "firmware", type, version)
-  let firmwareBinaryPath = path.join(tmpDir, "firmware", type, version, `${type}-${version}.bin`)
-  try {
-    await fs.stat(firmwareTypeDir)
-  } catch (e) {
-    assert.equal(e.code, "ENOENT")
-    await fs.mkdir(firmwareTypeDir)
-  }
-  await fs.mkdir(firmwareVersionDir)
-  await fs.writeFile(firmwareBinaryPath, `data-for-${type}-${version}`)
+  let directory = path.join(tmpDir, "firmware", type, version)
+  let firmwarePath = path.join(directory, `${type}-${version}.bin`)
+  await mkdir(directory)
+  await fs.writeFile(firmwarePath, `data-for-${type}-${version}`)
 }
 
 Given("there is a firmware binary for {} with a version of {}", async function (type, version) {
@@ -51,6 +47,15 @@ When("I ask for the list of firmware binaries", function (done) {
 
 When("a firmware binary for {} with a version of {} is added", async function (type, version) {
   await addBinary(this.tmpDir, type, version)
+})
+
+When("I send a binary file for {} with a version of {}", function (type, version, done) {
+  request.put(`http://localhost:${this.port}/api/firmware?type=${type}&version=${version}`, {
+    body: "my-firmware-data",
+  }, (err, response, body) => {
+    this.requestResult = { err, response, body }
+    done()
+  })
 })
 
 Then("I receive an empty list", function () {
@@ -83,4 +88,11 @@ Then("the service detects {} binar{}", async function (count, dummy) {
 
 Then("the service sends the firmware binary for {} with version {}", function (type, version) {
   assert.equal(this.requestResult.body, `data-for-${type}-${version}`)
+})
+
+Then("the a binary file for {} with a version of {} exists in the firmware directory", async function (type, version) {
+  let files = await glob(path.join(this.tmpDir, "firmware", type, version, "*.bin"))
+  assert.equal(files.length, 1)
+  console.log("File contents:")
+  console.log((await fs.readFile(files[0])).toString())
 })

@@ -1,17 +1,19 @@
 const chokidar = require("chokidar")
-const glob = require("glob")
-const semver = require("semver")
+const fs = require("fs").promises
+const util = require("util")
+const glob = util.promisify(require("glob"))
+const mkdir = util.promisify(require("mkdirp"))
 const path = require("path")
+const semver = require("semver")
 
 class Firmware {
   constructor(dataPath) {
     this.firmware = []
-    
-    this.glob = require("glob")
+    this.firmwarePath = path.join(dataPath, "firmware")
     this.firmwareGlob = path.join(dataPath, "firmware", "*", "*", "*.bin")
-    this.loadFromPath(dataPath)
-    let watcher = chokidar.watch(this.firmwareGlob)
+    this.loadFromPath()
 
+    let watcher = chokidar.watch(this.firmwareGlob)
     watcher.on("add", (file) => {
       console.log(`[Firmware] Binary file added: ${file}`)
       this.loadFromPath()
@@ -22,33 +24,40 @@ class Firmware {
     })
   }
 
-  loadFromPath() {
+  async loadFromPath() {
     let newFirmware = []
     console.log("[Firmware] Loading firmware from the data directory...")
-    glob(this.firmwareGlob, (err, files) => {
-      if (err) {
-        console.error("[Firmware] failed to find firmware files: ", err)
-        process.exit(1)
-      }
+    let firmwarePaths = await glob(this.firmwareGlob)
 
-      for (let file of files) {
-        let parts = file.split(path.sep)
-        let version = parts[parts.length - 2]
-        if (!semver.valid(version)) {
-          console.error(`[Firmware] Invalid version for file: ${file}`)
-        } else {
-          console.log(`[Firmware]    ${file}`)
-          newFirmware.push({
-            file,
-            filename: parts[parts.length - 1],
-            type: parts[parts.length - 3],
-            version
-          })
-        }
+    for (let firmwarePath of firmwarePaths) {
+      let parts = firmwarePath.split(path.sep)
+      let version = parts[parts.length - 2]
+      if (!semver.valid(version)) {
+        console.error(`[Firmware] Invalid version for file: ${firmwarePath}`)
+      } else {
+        console.log(`[Firmware]    ${firmwarePath}`)
+
+        let stats = await fs.stat(firmwarePath)
+        newFirmware.push({
+          file: firmwarePath,
+          filename: parts[parts.length - 1],
+          size: stats.size,
+          type: parts[parts.length - 3],
+          version
+        })
       }
-      this.firmware = newFirmware
-      console.log(`[Firmware] Firmware loaded: ${this.firmware.length} binaries`)
-    })
+    }
+    this.firmware = newFirmware
+    console.log(`[Firmware] Firmware loaded: ${this.firmware.length} binaries`)
+  }
+
+  async addBinary(firmwareType, version, data) {
+    let directory = path.join(this.firmwarePath, firmwareType, version)
+    let firmware = path.join(directory, `${firmwareType}-${version}.bin`)
+
+    console.log(`[Firmware] Writing firmware binary file: ${firmware}`)
+    await mkdir(directory)
+    await fs.writeFile(firmware, data)
   }
 
   getAll() {
