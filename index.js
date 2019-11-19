@@ -2,6 +2,7 @@
 
 const express = require("express")
 const app = express()
+const morgan = require("morgan")
 const multer = require("multer")
 const path = require("path")
 const semver = require("semver")
@@ -26,6 +27,8 @@ if (!path.isAbsolute(process.env.DATA_DIR)) {
 
 let devices = new Devices()
 let firmwareLibrary = new Firmware(process.env.DATA_DIR)
+
+app.use(morgan("combined"))
 
 app.get("/api/firmware", (req, res) => {
   res.json(firmwareLibrary.getAll())
