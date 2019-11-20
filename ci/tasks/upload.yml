@@ -19,5 +19,6 @@ run:
   args:
     - -exc
     - |
-      echo binaries/*.bin | \
-      curl -X PUT ${OTA_SERVICE}/api/firmware?type=${TYPE}&version=$(cat version/version)
+      curl -X PUT \
+        --data-binary $(cat binaries/*.bin) \
+        "${OTA_SERVICE}/api/firmware?type=${TYPE}&version=$(cat version/version)"  
