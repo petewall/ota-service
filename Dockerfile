@@ -8,6 +8,7 @@ COPY --from=cfplatformeng/needs:latest /usr/local/bin/needs /usr/local/bin/
 WORKDIR /usr/src/ota-service
 COPY [ "devices.js", "firmware.js", "index.js", "needs.json", "package.json", "package-lock.json", "/usr/src/ota-service/" ]
 COPY public /usr/src/ota-service/public
+COPY views /usr/src/ota-service/views
 RUN npm install --only=production
 
 EXPOSE 8266

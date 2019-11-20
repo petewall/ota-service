@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ota-service:
+    image: petewall/ota-service
+    restart: always
+    ports:
+      - "8226:8226"
+    environment:
+      - DATA_DIR=/data
+      - PORT=8226
+    volumes:
+      - /Users/pwall/data/firmware:/data/firmware
+    restart: always
