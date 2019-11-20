@@ -4,10 +4,10 @@ services:
     image: petewall/ota-service
     restart: always
     ports:
-      - "8226:8226"
+      - "8266:8266"
     environment:
       - DATA_DIR=/data
-      - PORT=8226
+      - PORT=8266
     volumes:
       - /Users/pwall/data/firmware:/data/firmware
     restart: always
