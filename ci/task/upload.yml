@@ -1,6 +1,11 @@
 ---
 platform: linux
 
+image_resource:
+  type: docker-image
+  source:
+    repository: curlimages/curl
+
 params:
   TYPE:
   OTA_SERVICE:
