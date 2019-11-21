@@ -27,7 +27,7 @@ After(async function () {
   }
 })
 
-When("I view the registry page", async function () {
+When("I view the registry page", {timeout: 60 * 1000}, async function () {
   if (!this.driver) {
     let builder = new Builder().forBrowser("chrome")
     if (process.env.CI == "true") {
