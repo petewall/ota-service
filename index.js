@@ -34,10 +34,8 @@ app.get("/api/firmware", (req, res) => {
   res.json(firmwareLibrary.getAll())
 })
 
-app.put("/api/firmware", bodyParser.raw(), async (req, res) => {
-  let type = req.query.type
-  let version = req.query.version
-  await firmwareLibrary.addBinary(type, version, req.body)
+app.put("/api/firmware/:type/:version([0-9a-zA-Z-._]+)", bodyParser.raw(), async (req, res) => {
+  await firmwareLibrary.addBinary(req.params.type, req.params.version, req.body)
   res.sendStatus(status.OK)
 })
 
