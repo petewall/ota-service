@@ -19,4 +19,8 @@ run:
   args:
     - -exc
     - |
-      curl --fail --upload-file binaries/*.bin "${OTA_SERVICE}/api/firmware/${TYPE}/$(cat version/version)"  
+      curl \
+        --fail \
+        --upload-file binaries/*.bin \
+        --header "Content-Type: application/octet-stream" \
+        "${OTA_SERVICE}/api/firmware/${TYPE}/$(cat version/version)"
