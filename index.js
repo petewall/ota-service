@@ -43,7 +43,7 @@ app.get("/api/devices", (req, res) => {
     res.json(devices.getAll())
 })
 
-app.get("/api/update/", (req, res) => {
+app.get("/api/update", (req, res) => {
     let mac = req.get("x-esp8266-sta-mac")
     let currentType = req.query.firmware
     let currentVersion = req.query.version
