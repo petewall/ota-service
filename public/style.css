@@ -22,3 +22,8 @@ table td input {
 table .loading {
     text-align: center;
 }
+
+.button {
+    cursor: pointer;
+    text-align: center;
+}

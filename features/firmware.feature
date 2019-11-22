@@ -20,12 +20,22 @@ Feature: Firmware
     And I receive a list with 1 entry
     And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
 
-  Scenario: Listing with one firmware on the registry page
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+  Scenario: Listing firmware on the registry page
+    Given there is a firmware binary for FIRMWARE_A with a version of 1.0.0
+    Given there is a firmware binary for FIRMWARE_C with a version of 1.0.0
+    Given there is a firmware binary for FIRMWARE_A with a version of 3.0.0
+    Given there is a firmware binary for FIRMWARE_B with a version of 1.0.0
+    Given there is a firmware binary for FIRMWARE_A with a version of 2.0.0
     And the OTA service is running
     When I view the registry page
-    Then the firmware list has 1 entry
-    And the firmware list contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Then the firmware list has 5 entries
+
+    And the firmware list contains a firmware for FIRMWARE_A with a version of 1.0.0
+    And the firmware list contains a firmware for FIRMWARE_A with a version of 2.0.0
+    And the firmware list contains a firmware for FIRMWARE_A with a version of 3.0.0
+    And the firmware list contains a firmware for FIRMWARE_B with a version of 1.0.0
+    And the firmware list contains a firmware for FIRMWARE_C with a version of 1.0.0
+    And the firmware list is sorted by firmware then by version
 
   Scenario: Listing with multiple firmware types
     Given there is a firmware binary for A_FIRMWARE with a version of 1.2.3
@@ -101,3 +111,24 @@ Feature: Firmware
     Then the request is successful
     And I receive a list with 1 entry
     And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+
+  Scenario: Deleting a binary
+    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    And the OTA service is running
+    When I send a delete request for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Then the request is successful
+    And the service detects 0 binaries
+
+    When I ask for the list of firmware binaries
+    Then the request is successful
+    And I receive an empty list
+
+  Scenario: Deleting a binary on the registry page
+    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    And the OTA service is running
+    When I view the registry page
+    And I click the delete button for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Then the service detects 0 binaries
+
+    When I view the registry page
+    Then the firmware list is empty

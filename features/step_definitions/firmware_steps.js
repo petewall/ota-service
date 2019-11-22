@@ -41,6 +41,13 @@ When("I send a binary file for {} with a version of {}", function (type, version
   })
 })
 
+When("I send a delete request for {} with a version of {}", function (type, version, done) {
+  request.delete(`http://localhost:${this.port}/api/firmware/${type}/${version}/${type}-${version}.bin`, (err, response, body) => {
+    this.requestResult = { err, response, body }
+    done()
+  })
+})
+
 Then("I receive an empty list", function () {
   assert.equal(this.requestResult.body, "[]")
 })

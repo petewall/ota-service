@@ -19,6 +19,22 @@ async function findDeviceInTable(driver, mac) {
   return null
 }
 
+async function findFirmwareInTable(driver, type, version) {
+  let rows = await driver.findElements(By.css("#firmwareTable tr"))
+  for (let row of rows) {
+    let cells = await row.findElements(By.tagName("td"))
+    if (cells.length > 0) {
+      let rowType = await cells[0].getText()
+      let rowVersion = await cells[1].getText()
+      if (type == rowType && version == rowVersion) {
+        return row
+      }
+    }
+  }
+
+  return null
+}
+
 After(async function () {
   if (this.driver) {
     debug("browser")(await this.driver.manage().logs().get("browser"))
@@ -53,6 +69,15 @@ When("I select {} from the dropdown of firmware for {} on the registry page", as
   }
 
   await row.findElement(By.tagName("select")).sendKeys(type)
+})
+
+When("I click the delete button for {} with a version of {}", async function (type, version) {
+  let row = await findFirmwareInTable(this.driver, type, version)
+  if (!row) {
+    assert.fail(`Firmware ${type} ${version} not found in firmware list`)
+  }
+
+  await row.findElement(By.className("deleteFirmware")).click()
 })
 
 Then("the device list is empty", async function () {
@@ -111,4 +136,24 @@ Then("the firmware list contains a firmware for {} with a version of {}", async 
   }
 
   assert(found, `Firmware ${type}:${version} not found in firmware list`)
+})
+
+Then("the firmware list is sorted by firmware then by version", async function () {
+  let rows = await this.driver.findElements(By.css("#firmwareTable tr"))
+  let lastType = ""
+  let lastVersion = ""
+
+  for (let row of rows) {
+    let cells = await row.findElements(By.tagName("td"))
+    if (cells.length > 0) {
+      let type = await cells[0].getText()
+      let version = await cells[1].getText()
+      assert(lastType <= type, `List not properly sorted: ${lastType} <= ${type}`)
+      if (lastType == type) {
+        assert(lastVersion < version, `List not properly sorted: ${lastVersion} > ${version}`)
+      }
+      lastType = type
+      lastVersion = version
+    }
+  }
 })

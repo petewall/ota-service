@@ -39,6 +39,19 @@ app.put("/api/firmware/:type/:version([0-9a-zA-Z-._]+)", bodyParser.raw({ limit:
   res.sendStatus(status.OK)
 })
 
+app.delete("/api/firmware/:type/:version([0-9a-zA-Z-._]+)/:filename([0-9a-zA-Z-._]+.bin)", async (req, res) => {
+  try {
+    await firmwareLibrary.deleteBinary(req.params.type, req.params.version, req.params.filename)
+    res.sendStatus(status.OK)
+  } catch (e) {
+    if (e.err == "ENOENT") {
+      res.sendStatus(status.NOT_FOUND)
+    } else {
+      res.sendStatus(status.INTERNAL_SERVER_ERROR)
+    }
+  }
+})
+
 app.get("/api/devices", (req, res) => {
     res.json(devices.getAll())
 })
@@ -87,7 +100,7 @@ app.set("view engine", "ejs");
 app.get("/", (req, res) => {
   res.render("index", {
     devices: devices.getAll(),
-    allFirmware: firmwareLibrary.getAll(),
+    allFirmware: firmwareLibrary.getAll(true),
     firmwareTypes: firmwareLibrary.getAllTypes()
   });
 });

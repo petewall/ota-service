@@ -60,7 +60,30 @@ class Firmware {
     await fs.writeFile(firmware, data)
   }
 
-  getAll() {
+  async deleteBinary(firmwareType, version, filename) {
+    console.log(`[Firmware] Deleting firmware binary file: ${firmwareType} ${version} ${filename}`)
+    let directory = path.join(this.firmwarePath, firmwareType, version)
+    let firmware = path.join(directory, filename)
+
+    await fs.unlink(firmware)
+  }
+
+  getAll(sorted = false) {
+    if (sorted) {
+      return this.firmware.sort((a, b) => {
+        if (a.type < b.type) {
+          return -1
+        } else if (a.type > b.type) {
+          return 1
+        } else if (a.version < b.version) {
+          return -1
+        } else if (a.version > b.version) {
+          return 1
+        }
+        return 0
+      })
+    }
+
     return this.firmware
   }
 
