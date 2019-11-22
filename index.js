@@ -43,8 +43,8 @@ app.delete("/api/firmware/:type/:version([0-9a-zA-Z-._]+)/:filename([0-9a-zA-Z-.
   try {
     await firmwareLibrary.deleteBinary(req.params.type, req.params.version, req.params.filename)
     res.sendStatus(status.OK)
-  } catch (e) {
-    if (e.err == "ENOENT") {
+  } catch (err) {
+    if (err.code == "ENOENT") {
       res.sendStatus(status.NOT_FOUND)
     } else {
       res.sendStatus(status.INTERNAL_SERVER_ERROR)

@@ -11,7 +11,6 @@ class Firmware {
     this.firmware = []
     this.firmwarePath = path.join(dataPath, "firmware")
     this.firmwareGlob = path.join(dataPath, "firmware", "*", "*", "*.bin")
-    this.loadFromPath()
 
     let watcher = chokidar.watch(this.firmwareGlob)
     watcher.on("add", (file) => {
@@ -20,6 +19,9 @@ class Firmware {
     })
     watcher.on("unlink", (file) => {
       console.log(`[Firmware] Binary file removed: ${file}`)
+      this.loadFromPath()
+    })
+    watcher.on("ready", () => {
       this.loadFromPath()
     })
   }
