@@ -33,25 +33,17 @@ Then("the firmware {} is assigned to {}", async function (type, mac) {
   await eventually(() => this.serviceStdout.indexOf(`[Device] Setting ${mac} to firmware ${type}`) >= 0)
 })
 
-Then("I receive an empty hash", function () {
-  assert.equal(this.requestResult.body, "{}")
-})
-
-Then("I receive a hash with {} entr{}", function (size, dummy) {
-  try {
-    this.result = JSON.parse(this.requestResult.body)
-  } catch (e) {
-    assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
-  }
-  assert.equal(Object.keys(this.result).length, size)
-})
-
 Then("it contains a device with mac {} running {} version {}", function (mac, type, version) {
-  assert.equal(this.result[mac].mac, mac)
-  assert.equal(this.result[mac].firmwareType, type)
-  assert.equal(this.result[mac].firmwareVersion, version)
-  assert.equal(this.result[mac].assignedFirmware, type)
-  assert(Date.now() - new Date(this.result[mac].lastUpdated).getTime() < 1000)
+  for (let device of this.result) {
+    if (device.mac == mac) {
+      assert.equal(device.firmwareType, type)
+      assert.equal(device.firmwareVersion, version)
+      assert.equal(device.assignedFirmware, type)
+      assert(Date.now() - new Date(device.lastUpdated).getTime() < 1000)
+      return
+    }
+  }
+  assert.fail("Device not found")
 })
 
 Then("the service responds with no update", function () {

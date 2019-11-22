@@ -99,7 +99,7 @@ app.use(express.static("public"))
 app.set("view engine", "ejs");
 app.get("/", (req, res) => {
   res.render("index", {
-    devices: devices.getAll(),
+    devices: devices.getAll(true),
     allFirmware: firmwareLibrary.getAll(true),
     firmwareTypes: firmwareLibrary.getAllTypes()
   });

@@ -48,19 +48,6 @@ When("I send a delete request for {} with a version of {}", function (type, vers
   })
 })
 
-Then("I receive an empty list", function () {
-  assert.equal(this.requestResult.body, "[]")
-})
-
-Then("I receive a list with {} entr{}", function (size, dummy) {
-  try {
-    this.result = JSON.parse(this.requestResult.body)
-  } catch (e) {
-    assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
-  }
-  assert.equal(this.result.length, size)
-})
-
 Then("it contains a firmware for {} with a version of {}", function (type, version) {
   let found = false
   for (let entry of this.result) {

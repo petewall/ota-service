@@ -138,6 +138,20 @@ Then("the firmware list contains a firmware for {} with a version of {}", async 
   assert(found, `Firmware ${type}:${version} not found in firmware list`)
 })
 
+Then("the device list is sorted by mac", async function () {
+  let rows = await this.driver.findElements(By.css("#deviceTable tr"))
+  let lastMAC = ""
+
+  for (let row of rows) {
+    let cells = await row.findElements(By.tagName("td"))
+    if (cells.length > 0) {
+      let mac = await cells[0].getText()
+      assert(lastMAC < mac, `List not properly sorted: ${lastMAC} < ${mac}`)
+      lastMAC = mac
+    }
+  }
+})
+
 Then("the firmware list is sorted by firmware then by version", async function () {
   let rows = await this.driver.findElements(By.css("#firmwareTable tr"))
   let lastType = ""

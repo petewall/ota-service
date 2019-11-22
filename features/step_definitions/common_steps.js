@@ -53,3 +53,16 @@ Then("the request is successful", function () {
   assert.equal(this.requestResult.err, null)
   assert.equal(this.requestResult.response.statusCode, status.OK)
 })
+
+Then("I receive an empty list", function () {
+  assert.equal(this.requestResult.body, "[]")
+})
+
+Then("I receive a list with {} entr{}", function (size, dummy) {
+  try {
+    this.result = JSON.parse(this.requestResult.body)
+  } catch (e) {
+    assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
+  }
+  assert.equal(this.result.length, size)
+})
