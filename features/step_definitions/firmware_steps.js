@@ -59,8 +59,8 @@ Then("it contains a firmware for {} with a version of {}", function (type, versi
   assert(found, `Firmware for ${type}:${version} not found in result list`)
 })
 
-Then("the service detects {} binar{}", async function (count, dummy) {
-  await eventually(() => this.serviceStdout.indexOf(`[Firmware] Firmware loaded: ${count} binaries`) >= 0)
+Then("the service detects {} binar{}", {timeout: 60 * 1000}, async function (count, dummy) {
+  await eventually(() => this.serviceStdout.indexOf(`[Firmware] Firmware loaded: ${count} binaries`) >= 0, 50 * 1000)
 })
 
 Then("the service sends the firmware binary for {} with version {}", function (type, version) {

@@ -1,4 +1,7 @@
-module.exports = function (check) {
+module.exports = function (check, timeout = 1000) {
+  const interval = 100
+  const maxCount = timeout / interval
+
   return new Promise((resolve, reject) => {
     let count = 0;
     let checkerId = setInterval(() => {
@@ -7,11 +10,11 @@ module.exports = function (check) {
         clearInterval(checkerId)
       } else {
         count += 1
-        if (count >= 10) {
+        if (count >= maxCount) {
           reject("eventually did not resolve within the timeout period")
           clearInterval(checkerId)
         }
       }
-    }, 100)
+    }, interval)
   })
 }

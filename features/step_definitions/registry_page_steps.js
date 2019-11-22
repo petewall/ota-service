@@ -59,7 +59,6 @@ When("I view the registry page", {timeout: 60 * 1000}, async function () {
   }
 
   await this.driver.get(`http://localhost:${this.port}`)
-  // await new Promise((resolve) => { setTimeout(resolve, 500)})
 })
 
 When("I select {} from the dropdown of firmware for {} on the registry page", async function (type, mac) {
