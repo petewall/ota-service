@@ -13,6 +13,7 @@
     <table id="deviceTable" class="loading">
       <tr>
         <th>MAC</th>
+        <th>Device ID</th>
         <th>Firmware</th>
         <th>Version</th>
         <th>Last Check</th>
@@ -22,6 +23,9 @@
       <% devices.forEach(device => { %>
         <tr id="<%= device.mac %>">
           <td><%= device.mac %></td>
+          <td>
+            <input class="deviceIdTextField" type="text" placeholder="not set" value="<%= device.id %>" />
+          </td>
           <td><%= device.firmwareType %></td>
           <td><%= device.firmwareVersion %></td>
           <td><%= device.lastUpdated %></td>

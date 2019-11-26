@@ -66,3 +66,20 @@ Then("I receive a list with {} entr{}", function (size, dummy) {
   }
   assert.equal(this.result.length, size)
 })
+
+Then("I receive a hash", function () {
+  try {
+    this.result = JSON.parse(this.requestResult.body)
+  } catch (e) {
+    assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
+  }
+})
+
+Then("the result has a{} {} of {}", function (dummy, key, value) {
+  assert.notEqual(typeof(this.result[key]), "undefined")
+  assert.equal(this.result[key], value)
+})
+
+Then("the result has no {}", function (key) {
+  assert.equal(typeof(this.result[key]), "undefined")
+})

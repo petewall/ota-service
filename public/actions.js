@@ -2,7 +2,10 @@ $(document).ready(() => {
   $(".firmwareSelector").change(function () {
     let mac = $(this).parents("tr").attr("id")
     let type = $(this).val()
-    $.post(`/api/assign?mac=${mac}&firmware=${type}`)
+    $.ajax({
+      url: `/api/device/${mac}?firmware=${type}`,
+      type: "PATCH",
+    })
   })
 
   $(".deleteFirmware.button").click(function () {
@@ -18,5 +21,16 @@ $(document).ready(() => {
       }
     })
   })
+
+  $(".deviceIdTextField").keyup(function (e) {
+    if (e.keyCode == 13) {
+      let mac = $(this).parents("tr").attr("id")
+      let id = $(this).val()
+      $.ajax({
+        url: `/api/device/${mac}?id=${id}`,
+        type: "PATCH"
+      })
+    }
+  });
 })
 

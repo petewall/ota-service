@@ -53,7 +53,26 @@ app.delete("/api/firmware/:type/:version([0-9a-zA-Z-._]+)/:filename([0-9a-zA-Z-.
 })
 
 app.get("/api/devices", (req, res) => {
-    res.json(devices.getAll())
+  res.json(devices.getAll())
+})
+
+app.get("/api/device/:mac", (req, res) => {
+  let device = devices.get(req.params.mac)
+  if (device) {
+    return res.json(device)
+  }
+
+  res.sendStatus(status.NOT_FOUND)
+})
+
+app.patch("/api/device/:mac", (req, res) => {
+  if (req.query.firmware) {
+    devices.assignFirmware(req.params.mac, req.query.firmware)
+  }
+  if (req.query.id) {
+    devices.setDeviceId(req.params.mac, req.query.id)
+  }
+  res.sendStatus(status.OK)
 })
 
 app.get("/api/update", (req, res) => {
@@ -63,6 +82,11 @@ app.get("/api/update", (req, res) => {
     console.log(`New request from ${mac}: type: ${currentType} version: ${currentVersion}`)
 
     let device = devices.updateDevice(mac, currentType, currentVersion)
+    if (!device.assignedFirmware) {
+      console.log("No firmware assigned.")
+      return res.sendStatus(status.NOT_MODIFIED)
+    }
+
     let latestFirmware = firmwareLibrary.getLatestForType(device.assignedFirmware)
     if (!latestFirmware) {
         console.log(`No firmware found for ${device.firmwareType}`)

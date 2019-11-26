@@ -4,16 +4,20 @@ class Devices {
   }
 
   updateDevice(mac, firmwareType, firmwareVersion) {
+    let device = this.getOrCreate(mac, "new")
+    device.firmwareType = firmwareType
+    device.firmwareVersion = firmwareVersion
+    device.lastUpdated = new Date()
+    return device
+  }
+
+  getOrCreate(mac, initialState) {
     if (!this.devices[mac]) {
       this.devices[mac] = {
         mac,
-        assignedFirmware: firmwareType,
-        state: "new"
+        state: initialState
       }
     }
-    this.devices[mac].firmwareType = firmwareType
-    this.devices[mac].firmwareVersion = firmwareVersion
-    this.devices[mac].lastUpdated = new Date()
     return this.devices[mac]
   }
 
@@ -35,14 +39,22 @@ class Devices {
     }
     return array
   }
+  
+  setDeviceId(mac, id) {
+    console.log(`[Device] Setting ${mac} to device id ${id}`)
+    this.getOrCreate(mac, "prepared")
+    this.devices[mac].id = id
+  }
 
   setState(mac, state) {
     console.log(`[Device] Setting ${mac} to state ${state}`)
+    this.getOrCreate(mac, "prepared")
     this.devices[mac].state = state
   }
 
   assignFirmware(mac, type) {
     console.log(`[Device] Setting ${mac} to firmware ${type}`)
+    this.getOrCreate(mac, "prepared")
     this.devices[mac].assignedFirmware = type
   }
 }

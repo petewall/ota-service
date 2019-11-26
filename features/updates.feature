@@ -7,6 +7,7 @@ Feature: Updates
 	Scenario: A device requests an update with a new version
     Given there is a firmware binary for SAMPLE_FIRMWARE with a version of 1.0.1
     And the OTA service is running
+    And there is a device DEVICE_MAC_ADDRESS with an assigned firmware type SAMPLE_FIRMWARE
     When an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     Then the service sends the firmware binary for SAMPLE_FIRMWARE with version 1.0.1
 
@@ -36,6 +37,9 @@ Feature: Updates
   Scenario: Updates show on the registry page
     Given there is a firmware binary for SAMPLE_FIRMWARE with a version of 1.0.1
     And the OTA service is running
+    And there is a device DEVICE_MAC_ADDRESS with an assigned firmware type SAMPLE_FIRMWARE
+    When I view the registry page
+    Then the registry page shows that the state of device DEVICE_MAC_ADDRESS is prepared
 
     When an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     And I view the registry page
@@ -44,3 +48,4 @@ Feature: Updates
     When an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.1
     And I view the registry page
     Then the device list has a device with mac DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.1
+    Then the registry page shows that the state of device DEVICE_MAC_ADDRESS is up to date

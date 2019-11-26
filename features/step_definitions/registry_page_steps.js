@@ -70,6 +70,15 @@ When("I select {} from the dropdown of firmware for {} on the registry page", as
   await row.findElement(By.tagName("select")).sendKeys(type)
 })
 
+When("I enter a device id of {} to {} on the registry page", async function (id, mac) {
+  let row = await findDeviceInTable(this.driver, mac)
+  if (!row) {
+    assert.fail(`Device ${mac} not found in device list`)
+  }
+
+  await row.findElement(By.tagName("input")).sendKeys(`${id}\n`)
+})
+
 When("I click the delete button for {} with a version of {}", async function (type, version) {
   let row = await findFirmwareInTable(this.driver, type, version)
   if (!row) {
@@ -96,8 +105,18 @@ Then("the device list has a device with mac {} running {} version {}", async fun
   }
  
   let cells = await row.findElements(By.tagName("td"))
-  assert.equal(await cells[1].getText(), type)
-  assert.equal(await cells[2].getText(), version)
+  assert.equal(await cells[2].getText(), type)
+  assert.equal(await cells[3].getText(), version)
+})
+
+Then("the device list has a device with mac {} with a device id of {}", async function (mac, id) {
+  let row = await findDeviceInTable(this.driver, mac)
+  if (!row) {
+    assert.fail(`Device ${mac} not found in device list`)
+  }
+ 
+  let textField = await row.findElement(By.tagName("input"))
+  assert.equal(await textField.getAttribute("value"), id)
 })
 
 Then("the registry page shows that the state of device {} is {}", async function (mac, state) {
@@ -107,7 +126,7 @@ Then("the registry page shows that the state of device {} is {}", async function
   }
 
   let cells = await row.findElements(By.tagName("td"))
-  assert.equal(await cells[4].getText(), state)
+  assert.equal(await cells[5].getText(), state)
 })
 
 Then("the firmware list is empty", async function () {
