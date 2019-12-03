@@ -17,7 +17,7 @@ async function addBinary(tmpDir, type, version) {
   await fs.writeFile(firmwarePath, `data-for-${type}-${version}`)
 }
 
-Given("there is a firmware binary for {} with a version of {}", async function (type, version) {
+Given("a firmware binary with type {} and version {}", async function (type, version) {
   await addBinary(this.tmpDir, type, version)
 })
 

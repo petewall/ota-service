@@ -13,7 +13,7 @@ Feature: Listing Firmware
     Then the firmware list is empty
 
   Scenario: Listing with one firmware
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type FEATURE_TEST_FIRMWARE and version 1.0.0
     And the OTA service is running
     When I ask for the list of firmware binaries
     Then the request is successful
@@ -21,11 +21,11 @@ Feature: Listing Firmware
     And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
 
   Scenario: Listing firmware on the registry page
-    Given there is a firmware binary for FIRMWARE_A with a version of 1.0.0
-    Given there is a firmware binary for FIRMWARE_C with a version of 1.0.0
-    Given there is a firmware binary for FIRMWARE_A with a version of 3.0.0
-    Given there is a firmware binary for FIRMWARE_B with a version of 1.0.0
-    Given there is a firmware binary for FIRMWARE_A with a version of 2.0.0
+    Given a firmware binary with type FIRMWARE_A and version 1.0.0
+    Given a firmware binary with type FIRMWARE_C and version 1.0.0
+    Given a firmware binary with type FIRMWARE_A and version 3.0.0
+    Given a firmware binary with type FIRMWARE_B and version 1.0.0
+    Given a firmware binary with type FIRMWARE_A and version 2.0.0
     And the OTA service is running
     When I view the registry page
     Then the firmware list has 5 entries
@@ -38,8 +38,8 @@ Feature: Listing Firmware
     And the firmware list is sorted by firmware then by version
 
   Scenario: Listing with multiple firmware types
-    Given there is a firmware binary for A_FIRMWARE with a version of 1.2.3
-    And there is a firmware binary for ANOTHER_FIRMWARE with a version of 4.5.6
+    Given a firmware binary with type A_FIRMWARE and version 1.2.3
+    And a firmware binary with type ANOTHER_FIRMWARE and version 4.5.6
     And the OTA service is running
     When I ask for the list of firmware binaries
     Then the request is successful
@@ -48,8 +48,8 @@ Feature: Listing Firmware
     And it contains a firmware for ANOTHER_FIRMWARE with a version of 4.5.6
 
   Scenario: Listing with multiple firmware versions
-    Given there is a firmware binary for SAME_FIRMWARE with a version of 1.0.0
-    And there is a firmware binary for SAME_FIRMWARE with a version of 1.0.1
+    Given a firmware binary with type SAME_FIRMWARE and version 1.0.0
+    And a firmware binary with type SAME_FIRMWARE and version 1.0.1
     And the OTA service is running
     When I ask for the list of firmware binaries
     Then the request is successful

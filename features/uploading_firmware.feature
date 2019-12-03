@@ -13,7 +13,7 @@ Feature: Uploading firmware
     And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 1.0.0
 
   Scenario: Uploading a new version of an exisitng firmware binary
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type FEATURE_TEST_FIRMWARE and version 1.0.0
     And the OTA service is running
     When I send a binary file for FEATURE_TEST_FIRMWARE with a version of 2.0.0
     Then the request is successful
@@ -27,7 +27,7 @@ Feature: Uploading firmware
     And it contains a firmware for FEATURE_TEST_FIRMWARE with a version of 2.0.0
 
   Scenario: Overwriting an existing binary
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type FEATURE_TEST_FIRMWARE and version 1.0.0
     And the OTA service is running
     When I send a binary file for FEATURE_TEST_FIRMWARE with a version of 1.0.0
     Then the request is successful

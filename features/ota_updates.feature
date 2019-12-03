@@ -5,14 +5,14 @@ Feature: OTA updates
     Then the service responds with no update
 
 	Scenario: A device requests an update with a new version
-    Given there is a firmware binary for SAMPLE_FIRMWARE with a version of 1.0.1
+    Given a firmware binary with type SAMPLE_FIRMWARE and version 1.0.1
     And the OTA service is running
     And there is a device DEVICE_MAC_ADDRESS with an assigned firmware type SAMPLE_FIRMWARE
     When an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     Then the service sends the firmware binary for SAMPLE_FIRMWARE with version 1.0.1
 
   Scenario: Updates show on the registry page
-    Given there is a firmware binary for SAMPLE_FIRMWARE with a version of 1.0.1
+    Given a firmware binary with type SAMPLE_FIRMWARE and version 1.0.1
     And the OTA service is running
     And there is a device DEVICE_MAC_ADDRESS with an assigned firmware type SAMPLE_FIRMWARE
     When I view the registry page

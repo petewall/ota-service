@@ -1,6 +1,6 @@
 Feature: Assigning firmware types
 	Scenario: Assigning a new firmware type to a device
-    Given there is a firmware binary for NEW_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type NEW_FIRMWARE and version 1.0.0
     And the OTA service is running
     And an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     When I assign a firmware type of NEW_FIRMWARE to DEVICE_MAC_ADDRESS
@@ -11,7 +11,7 @@ Feature: Assigning firmware types
     And the service sends the firmware binary for NEW_FIRMWARE with version 1.0.0
 
 	Scenario: Assigning a new firmware type to a device on the registry page
-    Given there is a firmware binary for NEW_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type NEW_FIRMWARE and version 1.0.0
     And the OTA service is running
     And an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     When I view the registry page

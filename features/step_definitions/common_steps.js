@@ -10,7 +10,6 @@ const spawn = require("child_process").spawn
 const status  = require("http-status")
 
 Before(async function () {
-  // debug.enable("otaService:*")
   this.tmpDir = await fs.mkdtemp("tmp-features-")
   await fs.mkdir(path.join(this.tmpDir, "firmware"))
 })
@@ -64,6 +63,7 @@ Then("I receive a list with {} entr{}", function (size, dummy) {
   } catch (e) {
     assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
   }
+  assert.equal(typeof this.result, "object")
   assert.equal(this.result.length, size)
 })
 
@@ -73,6 +73,7 @@ Then("I receive a hash", function () {
   } catch (e) {
     assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
   }
+  assert.equal(typeof this.result, "object")
 })
 
 Then("the result has a{} {} of {}", function (dummy, key, value) {

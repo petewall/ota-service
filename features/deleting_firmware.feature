@@ -1,6 +1,6 @@
 Feature: Deleting firmware
   Scenario: Deleting a binary
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type FEATURE_TEST_FIRMWARE and version 1.0.0
     And the OTA service is running
     When I send a delete request for FEATURE_TEST_FIRMWARE with a version of 1.0.0
     Then the request is successful
@@ -11,7 +11,7 @@ Feature: Deleting firmware
     And I receive an empty list
 
   Scenario: Deleting a binary on the registry page
-    Given there is a firmware binary for FEATURE_TEST_FIRMWARE with a version of 1.0.0
+    Given a firmware binary with type FEATURE_TEST_FIRMWARE and version 1.0.0
     And the OTA service is running
     When I view the registry page
     And I click the delete button for FEATURE_TEST_FIRMWARE with a version of 1.0.0
