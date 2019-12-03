@@ -119,6 +119,7 @@ app.post("/api/assign", (req, res) => {
 })
 
 app.use(express.static("public"))
+app.use(express.static(path.join("node_modules", "jquery", "dist"), { extensions: ["js"]}))
 
 app.set("view engine", "ejs");
 app.get("/", (req, res) => {
