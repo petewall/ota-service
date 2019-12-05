@@ -76,12 +76,14 @@ app.patch("/api/device/:mac", (req, res) => {
 })
 
 app.get("/api/update", (req, res) => {
+  console.log(req)
     let mac = req.get("x-esp8266-sta-mac")
     let currentType = req.query.firmware
     let currentVersion = req.query.version
+    let ipAddress = req.connection.remoteAddress.split(":").pop()
     console.log(`New request from ${mac}: type: ${currentType} version: ${currentVersion}`)
 
-    let device = devices.updateDevice(mac, currentType, currentVersion)
+    let device = devices.updateDevice(mac, currentType, currentVersion, ipAddress)
     if (!device.assignedFirmware) {
       console.log("No firmware assigned.")
       return res.sendStatus(status.NOT_MODIFIED)

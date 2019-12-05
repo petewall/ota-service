@@ -16,20 +16,22 @@
         <th>Device ID</th>
         <th>Firmware</th>
         <th>Version</th>
+        <th>IP Address</th>
         <th>Last Check</th>
         <th>State</th>
         <th>Assigned Firmware</th>
       </tr>
       <% devices.forEach(device => { %>
         <tr id="<%= device.mac %>">
-          <td><%= device.mac %></td>
-          <td>
+          <td class="mac"><%= device.mac %></td>
+          <td class="deviceId">
             <input class="deviceIdTextField" type="text" placeholder="not set" value="<%= device.id %>" />
           </td>
-          <td><%= device.firmwareType %></td>
-          <td><%= device.firmwareVersion %></td>
+          <td class="firmwareType"><%= device.firmwareType %></td>
+          <td class="firmwareVersion"><%= device.firmwareVersion %></td>
+          <td class="ipAddress"><a href="http://<%= device.ipAddress %>" target="_blank"><%= device.ipAddress %></a></td>
           <td><%= device.lastUpdated %></td>
-          <td><%= device.state %></td>
+          <td class="state"><%= device.state %></td>
           <td>
             <select class="firmwareSelector">
               <option></option>

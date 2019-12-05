@@ -104,9 +104,10 @@ Then("the device list has a device with mac {} running {} version {}", async fun
     assert.fail(`Device ${mac} not found in device list`)
   }
  
-  let cells = await row.findElements(By.tagName("td"))
-  assert.equal(await cells[2].getText(), type)
-  assert.equal(await cells[3].getText(), version)
+  let firmwareTypeCell = await row.findElement(By.className("firmwareType"))
+  let firmwareVersionCell = await row.findElement(By.className("firmwareVersion"))
+  assert.equal(await firmwareTypeCell.getText(), type)
+  assert.equal(await firmwareVersionCell.getText(), version)
 })
 
 Then("the device list has a device with mac {} with a device id of {}", async function (mac, id) {
@@ -125,8 +126,8 @@ Then("the registry page shows that the state of device {} is {}", async function
     assert.fail(`Device ${mac} not found in device list`)
   }
 
-  let cells = await row.findElements(By.tagName("td"))
-  assert.equal(await cells[5].getText(), state)
+  let cell = await row.findElement(By.className("state"))
+  assert.equal(await cell.getText(), state)
 })
 
 Then("the firmware list is empty", async function () {

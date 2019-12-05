@@ -3,10 +3,11 @@ class Devices {
     this.devices = {}
   }
 
-  updateDevice(mac, firmwareType, firmwareVersion) {
+  updateDevice(mac, firmwareType, firmwareVersion, ipAddress) {
     let device = this.getOrCreate(mac, "new")
     device.firmwareType = firmwareType
     device.firmwareVersion = firmwareVersion
+    device.ipAddress = ipAddress
     device.lastUpdated = new Date()
     return device
   }
