@@ -53,6 +53,20 @@ Then("the request is successful", function () {
   assert.equal(this.requestResult.response.statusCode, status.OK)
 })
 
+Then("the request returns no content", function () {
+  assert.equal(this.requestResult.err, null)
+  assert.equal(this.requestResult.response.statusCode, status.NO_CONTENT)
+})
+
+Then("the request returns not found", function () {
+  assert.equal(this.requestResult.err, null)
+  assert.equal(this.requestResult.response.statusCode, status.NOT_FOUND)
+})
+
+Then("I receive the value {}", function (value) {
+  assert.equal(this.requestResult.body, value)
+})
+
 Then("I receive an empty list", function () {
   assert.equal(this.requestResult.body, "[]")
 })
@@ -82,5 +96,5 @@ Then("the result has a{} {} of {}", function (dummy, key, value) {
 })
 
 Then("the result has no {}", function (key) {
-  assert.equal(typeof(this.result[key]), "undefined")
+  assert.equal(Boolean(this.result[key]), false)
 })

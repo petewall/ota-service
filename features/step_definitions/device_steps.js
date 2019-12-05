@@ -29,6 +29,13 @@ When("I ask for the device properties for {}", function (mac, done) {
   })
 })
 
+When("I ask for the {} property for {}", function (field, mac, done) {
+  request.get(`http://localhost:${this.port}/api/device/${mac}/${field}`, (err, response, body) => {
+    this.requestResult = { err, response, body }
+    done()
+  })
+})
+
 Given("there is a device {} with an assigned firmware type {}", function (mac, type, done) {
   request.patch(`http://localhost:${this.port}/api/device/${mac}?firmware=${type}`, (err, response, body) => {
     this.requestResult = { err, response, body }

@@ -58,11 +58,29 @@ app.get("/api/devices", (req, res) => {
 
 app.get("/api/device/:mac", (req, res) => {
   let device = devices.get(req.params.mac)
-  if (device) {
-    return res.json(device)
+  if (!device) {
+    return res.sendStatus(status.NOT_FOUND)
   }
 
-  res.sendStatus(status.NOT_FOUND)
+  res.json(device)
+})
+
+app.get("/api/device/:mac/:field", (req, res) => {
+  let device = devices.get(req.params.mac)
+  if (!device) {
+    return res.sendStatus(status.NOT_FOUND)
+  }
+
+  let field = req.params.field
+  if (typeof device[field] == "undefined") {
+    return res.sendStatus(status.NOT_FOUND)
+  }
+
+  if (device[field] === null) {
+    return res.sendStatus(status.NO_CONTENT)
+  }
+
+  res.send(device[field])
 })
 
 app.patch("/api/device/:mac", (req, res) => {

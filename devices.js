@@ -16,7 +16,13 @@ class Devices {
     if (!this.devices[mac]) {
       this.devices[mac] = {
         mac,
-        state: initialState
+        state: initialState,
+        id: null,
+        firmwareType: null,
+        firmwareVersion: null,
+        assignedFirmware: null,
+        ipAddress: null,
+        lastUpdated: null
       }
     }
     return this.devices[mac]
