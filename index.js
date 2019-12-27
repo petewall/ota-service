@@ -28,6 +28,10 @@ if (!path.isAbsolute(process.env.DATA_DIR)) {
 let devices = new Devices()
 let firmwareLibrary = new Firmware(process.env.DATA_DIR)
 
+app.get("/healthcheck", (req, res) => {
+  res.sendStatus(status.OK)
+})
+
 app.use(morgan("combined"))
 
 app.get("/api/firmware", (req, res) => {
