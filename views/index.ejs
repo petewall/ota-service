@@ -13,7 +13,6 @@
     <table id="deviceTable" class="loading">
       <tr>
         <th>MAC</th>
-        <th>Device ID</th>
         <th>Firmware</th>
         <th>Version</th>
         <th>IP Address</th>
@@ -24,9 +23,6 @@
       <% devices.forEach(device => { %>
         <tr id="<%= device.mac %>">
           <td class="mac"><%= device.mac %></td>
-          <td class="deviceId">
-            <input class="deviceIdTextField" type="text" placeholder="not set" value="<%= device.id %>" />
-          </td>
           <td class="firmwareType"><%= device.firmwareType %></td>
           <td class="firmwareVersion"><%= device.firmwareVersion %></td>
           <td class="ipAddress"><a href="http://<%= device.ipAddress %>" target="_blank"><%= device.ipAddress %></a></td>

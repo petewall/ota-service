@@ -91,9 +91,6 @@ app.patch("/api/device/:mac", (req, res) => {
   if (req.query.firmware) {
     devices.assignFirmware(req.params.mac, req.query.firmware)
   }
-  if (req.query.id) {
-    devices.setDeviceId(req.params.mac, req.query.id)
-  }
   res.sendStatus(status.OK)
 })
 

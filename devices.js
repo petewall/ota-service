@@ -47,12 +47,6 @@ class Devices {
     return array
   }
   
-  setDeviceId(mac, id) {
-    console.log(`[Device] Setting ${mac} to device id ${id}`)
-    this.getOrCreate(mac, "prepared")
-    this.devices[mac].id = id
-  }
-
   setState(mac, state) {
     console.log(`[Device] Setting ${mac} to state ${state}`)
     this.getOrCreate(mac, "prepared")

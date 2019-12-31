@@ -43,22 +43,11 @@ Given("there is a device {} with an assigned firmware type {}", function (mac, t
   })
 })
 
-When("I assign a device id of {} to {}", function (id, mac, done) {
-  request.patch(`http://localhost:${this.port}/api/device/${mac}?id=${id}`, (err, response, body) => {
-    this.requestResult = { err, response, body }
-    done()
-  })
-})
-
 When("I assign a firmware type of {} to {}", function (type, mac, done) {
   request.patch(`http://localhost:${this.port}/api/device/${mac}?firmware=${type}`, (err, response, body) => {
     this.requestResult = { err, response, body }
     done()
   })
-})
-
-Then("the server updates {} with device id of {}", async function (mac, type) {
-  await eventually(() => this.serviceStdout.indexOf(`[Device] Setting ${mac} to device id ${type}`) >= 0)
 })
 
 Then("the firmware {} is assigned to {}", async function (type, mac) {
