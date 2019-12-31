@@ -26,7 +26,7 @@
           <td class="firmwareType"><%= device.firmwareType %></td>
           <td class="firmwareVersion"><%= device.firmwareVersion %></td>
           <td class="ipAddress"><a href="http://<%= device.ipAddress %>" target="_blank"><%= device.ipAddress %></a></td>
-          <td><%= device.lastUpdated %></td>
+          <td title="<%= moment(device.lastUpdated).format('LLLL') %>"><%= moment(device.lastUpdated).fromNow() %></td>
           <td class="state"><%= device.state %></td>
           <td>
             <select class="firmwareSelector">

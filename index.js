@@ -3,6 +3,8 @@
 const express = require("express")
 const app = express()
 const bodyParser = require("body-parser")
+const ejs = require("ejs")
+const moment = require("moment")
 const morgan = require("morgan")
 const path = require("path")
 const semver = require("semver")
@@ -143,6 +145,7 @@ app.use(express.static("public"))
 app.use(express.static(path.join("node_modules", "jquery", "dist"), { extensions: ["js"]}))
 
 app.set("view engine", "ejs");
+app.locals.moment = moment
 app.get("/", (req, res) => {
   res.render("index", {
     devices: devices.getAll(true),
