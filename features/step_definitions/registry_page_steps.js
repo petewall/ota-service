@@ -77,6 +77,13 @@ When("I click the delete button for {} with a version of {}", async function (ty
   }
 
   await row.findElement(By.className("deleteFirmware")).click()
+  await this.driver.wait(until.alertIsPresent());
+
+  let alert = await this.driver.switchTo().alert()
+  let alertText = await alert.getText()
+  
+  assert.equal(alertText, `Are you sure you want to delete the firmare ${type} ${version}?\n\nThis cannot be undone.`)
+  await alert.accept();
 })
 
 Then("the device list is empty", async function () {

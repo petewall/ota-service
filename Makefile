@@ -14,6 +14,10 @@ lint: node_modules/.installed $(SOURCES)
 test: deps lint
 	npm test
 
+test-firmware:
+	mkdir -p data/firmware/test/1.2.3/
+	touch data/firmware/test/1.2.3/test-1.2.3.bin
+
 test-update:
 	curl --header "x-esp8266-sta-mac: my-test-device-mac" "http://localhost:8266/api/update?firmware=test&version=0.0.0"
 
@@ -23,5 +27,5 @@ clean:
 build: lint deps
 	docker build --tag petewall/ota-service --file Dockerfile .
 
-run:
+run: deps
 	PORT=8266 DATA_DIR=$(shell pwd)/data ./index.js

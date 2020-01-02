@@ -13,13 +13,16 @@ $(document).ready(() => {
     let filename = row.data("filename")
     let type = row.data("type")
     let version = row.data("version")
-    $.ajax({
-      url: `/api/firmware/${type}/${version}/${filename}`,
-      type: "DELETE",
-      success: () => {
-        row.remove()
-      }
-    })
+
+    if (confirm(`Are you sure you want to delete the firmare ${type} ${version}?\n\nThis cannot be undone.`)) {
+      $.ajax({
+        url: `/api/firmware/${type}/${version}/${filename}`,
+        type: "DELETE",
+        success: () => {
+          row.remove()
+        }
+      })
+    }
   })
 
   $(".deviceIdTextField").keyup(function (e) {
