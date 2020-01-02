@@ -3,6 +3,9 @@ FROM node:13-slim
 LABEL description="An image for running the WallHouse OTA Service"
 LABEL maintainer="Pete Wall <pete@petewall.net>"
 
+ARG TIMEZONE=America/Chicago
+RUN ln -sf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime
+
 COPY --from=cfplatformeng/needs:latest /usr/local/bin/needs /usr/local/bin/
 
 WORKDIR /usr/src/ota-service
