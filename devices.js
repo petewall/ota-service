@@ -5,6 +5,7 @@ class Devices {
 
   updateDevice(mac, firmwareType, firmwareVersion, ipAddress) {
     let device = this.getOrCreate(mac, "new")
+    device.assignedFirmware = device.assignedFirmware || firmwareType
     device.firmwareType = firmwareType
     device.firmwareVersion = firmwareVersion
     device.ipAddress = ipAddress
@@ -57,6 +58,7 @@ class Devices {
     console.log(`[Device] Setting ${mac} to firmware ${type}`)
     this.getOrCreate(mac, "prepared")
     this.devices[mac].assignedFirmware = type
+    this.setState(mac, "reassigned")
   }
 }
 

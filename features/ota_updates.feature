@@ -16,7 +16,7 @@ Feature: OTA updates
     And the OTA service is running
     And there is a device DEVICE_MAC_ADDRESS with an assigned firmware type SAMPLE_FIRMWARE
     When I view the registry page
-    Then the registry page shows that the state of device DEVICE_MAC_ADDRESS is prepared
+    Then the registry page shows that the state of device DEVICE_MAC_ADDRESS is reassigned
 
     When an update request comes from DEVICE_MAC_ADDRESS running SAMPLE_FIRMWARE version 1.0.0
     And I view the registry page

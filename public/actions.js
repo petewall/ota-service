@@ -24,16 +24,5 @@ $(document).ready(() => {
       })
     }
   })
-
-  $(".deviceIdTextField").keyup(function (e) {
-    if (e.keyCode == 13) {
-      let mac = $(this).parents("tr").attr("id")
-      let id = $(this).val()
-      $.ajax({
-        url: `/api/device/${mac}?id=${id}`,
-        type: "PATCH"
-      })
-    }
-  });
 })
 
