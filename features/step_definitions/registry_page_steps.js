@@ -1,8 +1,9 @@
-const { Before, After, Then, When } = require("cucumber")
+const { After, Then, When } = require("cucumber")
 const { Builder, By, until } = require("selenium-webdriver")
 const { Options } = require("selenium-webdriver/chrome")
 const assert = require("assert")
 const debug = require("debug")
+const semver = require("semver")
 
 async function findDeviceInTable(driver, mac) {
   let rows = await driver.findElements(By.css("#deviceTable tr"))
@@ -171,7 +172,7 @@ Then("the firmware list is sorted by firmware then by version", async function (
       let version = await cells[1].getText()
       assert(lastType <= type, `List not properly sorted: ${lastType} <= ${type}`)
       if (lastType == type) {
-        assert(lastVersion < version, `List not properly sorted: ${lastVersion} > ${version}`)
+        assert(semver.gt(lastVersion, version), `List not properly sorted: ${lastVersion} > ${version}`)
       }
       lastType = type
       lastVersion = version
