@@ -4,7 +4,7 @@ const eventually = require("./eventually.js")
 const fs = require("fs").promises
 const util = require("util")
 const glob = util.promisify(require("glob"))
-const mkdir = util.promisify(require("mkdirp"))
+const mkdirp = require("mkdirp")
 const request = require("request")
 const path = require("path")
 
@@ -13,7 +13,7 @@ Given("an empty firmware directory", function () {})
 async function addBinary(tmpDir, type, version) {
   let directory = path.join(tmpDir, "firmware", type, version)
   let firmwarePath = path.join(directory, `${type}-${version}.bin`)
-  await mkdir(directory)
+  await mkdirp(directory)
   await fs.writeFile(firmwarePath, `data-for-${type}-${version}`)
 }
 

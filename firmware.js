@@ -2,7 +2,7 @@ const chokidar = require("chokidar")
 const fs = require("fs").promises
 const util = require("util")
 const glob = util.promisify(require("glob"))
-const mkdir = util.promisify(require("mkdirp"))
+const mkdirp = require("mkdirp")
 const path = require("path")
 const semver = require("semver")
 
@@ -58,7 +58,7 @@ class Firmware {
     let firmware = path.join(directory, `${firmwareType}-${version}.bin`)
 
     console.log(`[Firmware] Writing firmware binary file: ${firmware}`)
-    await mkdir(directory)
+    await mkdirp(directory)
     await fs.writeFile(firmware, data)
   }
 
