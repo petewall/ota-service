@@ -1,7 +1,7 @@
 const { After, Then, When } = require("cucumber")
 const { Builder, By, until } = require("selenium-webdriver")
 const { Options } = require("selenium-webdriver/chrome")
-const assert = require("assert")
+const { assert, expect } = require('chai')
 const debug = require("debug")
 const semver = require("semver")
 
@@ -64,37 +64,33 @@ When("I view the registry page", {timeout: 60 * 1000}, async function () {
 
 When("I select {} from the dropdown of firmware for {} on the registry page", async function (type, mac) {
   let row = await findDeviceInTable(this.driver, mac)
-  if (!row) {
-    assert.fail(`Device ${mac} not found in device list`)
-  }
+  expect(row, `Device ${mac} not found in device list`).to.not.be.undefined
 
   await row.findElement(By.tagName("select")).sendKeys(type)
 })
 
 When("I click the delete button for {} with a version of {}", async function (type, version) {
   let row = await findFirmwareInTable(this.driver, type, version)
-  if (!row) {
-    assert.fail(`Firmware ${type} ${version} not found in firmware list`)
-  }
+  expect(row, `Firmware ${type} ${version} not found in firmware list`).to.not.be.undefined
 
   await row.findElement(By.className("deleteFirmware")).click()
-  await this.driver.wait(until.alertIsPresent());
+  await this.driver.wait(until.alertIsPresent())
 
   let alert = await this.driver.switchTo().alert()
   let alertText = await alert.getText()
   
-  assert.equal(alertText, `Are you sure you want to delete the firmare ${type} ${version}?\n\nThis cannot be undone.`)
-  await alert.accept();
+  expect(alertText).to.equal(`Are you sure you want to delete the firmare ${type} ${version}?\n\nThis cannot be undone.`)
+  await alert.accept()
 })
 
 Then("the device list is empty", async function () {
   let rows = await this.driver.findElements(By.css("#deviceTable tr"))
-  assert.equal(rows.length, 1) // includes header row
+  expect(rows).to.have.length(1) // includes header row
 })
 
 Then("the device list has {} entr{}", async function (count, dummy) {
   let rows = await this.driver.findElements(By.css("#deviceTable tr"))
-  assert.equal(rows.length, parseInt(count) + 1) // includes header row
+  expect(rows).to.have.length(parseInt(count) + 1) // includes header row
 })
 
 Then("the device list has a device with mac {} running {} version {}", async function (mac, type, version) {
@@ -105,28 +101,26 @@ Then("the device list has a device with mac {} running {} version {}", async fun
  
   let firmwareTypeCell = await row.findElement(By.className("firmwareType"))
   let firmwareVersionCell = await row.findElement(By.className("firmwareVersion"))
-  assert.equal(await firmwareTypeCell.getText(), type)
-  assert.equal(await firmwareVersionCell.getText(), version)
+  expect(await firmwareTypeCell.getText()).to.equal(type)
+  expect(await firmwareVersionCell.getText()).to.equal(version)
 })
 
 Then("the registry page shows that the state of device {} is {}", async function (mac, state) {
   let row = await findDeviceInTable(this.driver, mac)
-  if (!row) {
-    assert.fail(`Device ${mac} not found in device list`)
-  }
+  expect(row, `Device ${mac} not found in device list`).to.not.be.undefined
 
   let cell = await row.findElement(By.className("state"))
-  assert.equal(await cell.getText(), state)
+  expect(await cell.getText()).to.equal(state)
 })
 
 Then("the firmware list is empty", async function () {
   let rows = await this.driver.findElements(By.css("#firmwareTable tr"))
-  assert.equal(rows.length, 1) // includes header row
+  expect(rows).to.have.length(1) // includes header row
 })
 
 Then("the firmware list has {} entr{}", async function (count, dummy) {
   let rows = await this.driver.findElements(By.css("#firmwareTable tr"))
-  assert.equal(rows.length, parseInt(count) + 1) // includes header row
+  expect(rows).to.have.length(parseInt(count) + 1) // includes header row
 })
 
 Then("the firmware list contains a firmware for {} with a version of {}", async function (type, version) {
@@ -143,7 +137,7 @@ Then("the firmware list contains a firmware for {} with a version of {}", async 
     }
   }
 
-  assert(found, `Firmware ${type}:${version} not found in firmware list`)
+  expect(found, `Firmware ${type}:${version} not found in firmware list`).to.be.true
 })
 
 Then("the device list is sorted by mac", async function () {
@@ -154,7 +148,7 @@ Then("the device list is sorted by mac", async function () {
     let cells = await row.findElements(By.tagName("td"))
     if (cells.length > 0) {
       let mac = await cells[0].getText()
-      assert(lastMAC < mac, `List not properly sorted: ${lastMAC} < ${mac}`)
+      expect(lastMAC < mac, `List not properly sorted: ${lastMAC} < ${mac}`).to.be.true
       lastMAC = mac
     }
   }
@@ -170,9 +164,9 @@ Then("the firmware list is sorted by firmware then by version", async function (
     if (cells.length > 0) {
       let type = await cells[0].getText()
       let version = await cells[1].getText()
-      assert(lastType <= type, `List not properly sorted: ${lastType} <= ${type}`)
+      expect(lastType <= type, `List not properly sorted: ${lastType} <= ${type}`).to.be.true
       if (lastType == type) {
-        assert(semver.gt(lastVersion, version), `List not properly sorted: ${lastVersion} > ${version}`)
+        expect(semver.gt(lastVersion, version), `List not properly sorted: ${lastVersion} > ${version}`).to.be.true
       }
       lastType = type
       lastVersion = version

@@ -1,6 +1,6 @@
 const util = require("util")
 const { Before, After, Given, Then } = require("cucumber")
-const assert = require("assert")
+const { assert, expect } = require('chai')
 const debug = require("debug")
 const fs = require("fs").promises
 const getPort = require("get-port")
@@ -49,26 +49,26 @@ Given("the OTA service is running", function (done) {
 })
 
 Then("the request is successful", function () {
-  assert.equal(this.requestResult.err, null)
-  assert.equal(this.requestResult.response.statusCode, status.OK)
+  expect(this.requestResult.err).to.be.null
+  expect(this.requestResult.response.statusCode).to.equal(status.OK)
 })
 
 Then("the request returns no content", function () {
-  assert.equal(this.requestResult.err, null)
-  assert.equal(this.requestResult.response.statusCode, status.NO_CONTENT)
+  expect(this.requestResult.err).to.be.null
+  expect(this.requestResult.response.statusCode).to.equal(status.NO_CONTENT)
 })
 
 Then("the request returns not found", function () {
-  assert.equal(this.requestResult.err, null)
-  assert.equal(this.requestResult.response.statusCode, status.NOT_FOUND)
+  expect(this.requestResult.err).to.be.null
+  expect(this.requestResult.response.statusCode).to.equal(status.NOT_FOUND)
 })
 
 Then("I receive the value {}", function (value) {
-  assert.equal(this.requestResult.body, value)
+  expect(this.requestResult.body).to.equal(value)
 })
 
 Then("I receive an empty list", function () {
-  assert.equal(this.requestResult.body, "[]")
+  expect(this.requestResult.body).to.equal("[]")
 })
 
 Then("I receive a list with {} entr{}", function (size, dummy) {
@@ -77,8 +77,8 @@ Then("I receive a list with {} entr{}", function (size, dummy) {
   } catch (e) {
     assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
   }
-  assert.equal(typeof this.result, "object")
-  assert.equal(this.result.length, size)
+  expect(this.result).to.be.an("array")
+  expect(this.result).to.have.lengthOf(size);
 })
 
 Then("I receive a hash", function () {
@@ -87,14 +87,15 @@ Then("I receive a hash", function () {
   } catch (e) {
     assert.fail(`request body could not be parsed: ${this.requestResult.body}`)
   }
-  assert.equal(typeof this.result, "object")
+  expect(this.result).to.be.an("object")
 })
 
 Then("the result has a{} {} of {}", function (dummy, key, value) {
-  assert.notEqual(typeof(this.result[key]), "undefined")
-  assert.equal(this.result[key], value)
+  expect(this.result).to.be.an("object")
+  expect(this.result).to.include.all.keys(key)
+  expect(this.result[key]).to.equal(value)
 })
 
 Then("the result has no {}", function (key) {
-  assert.equal(Boolean(this.result[key]), false)
+  expect(this.result).to.not.include(key)
 })

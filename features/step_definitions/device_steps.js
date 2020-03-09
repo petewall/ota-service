@@ -1,5 +1,5 @@
 const { Given, Then, When } = require("cucumber")
-const assert = require("assert")
+const { assert, expect } = require('chai')
 const eventually = require("./eventually.js")
 const request = require("request")
 const status  = require("http-status")
@@ -57,9 +57,10 @@ Then("the firmware {} is assigned to {}", async function (type, mac) {
 Then("it contains a device with mac {} running {} version {}", function (mac, type, version) {
   for (let device of this.result) {
     if (device.mac == mac) {
-      assert.equal(device.firmwareType, type)
-      assert.equal(device.firmwareVersion, version)
-      assert(Date.now() - new Date(device.lastUpdated).getTime() < 1000)
+      expect(device.firmwareType).to.equal(type)
+      expect(device.firmwareVersion).to.equal(version)
+      let updateTime = new Date(device.lastUpdated).getTime()
+      expect(Date.now()).to.be.within(updateTime, updateTime + 1000)
       return
     }
   }
@@ -67,6 +68,6 @@ Then("it contains a device with mac {} running {} version {}", function (mac, ty
 })
 
 Then("the service responds with no update", function () {
-  assert.equal(this.requestResult.err, null)
-  assert.equal(this.requestResult.response.statusCode, status.NOT_MODIFIED)
+  expect(this.requestResult.err).to.be.null
+  expect(this.requestResult.response.statusCode).to.equal(status.NOT_MODIFIED)
 })

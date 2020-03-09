@@ -1,5 +1,5 @@
 const { Given, Then, When } = require("cucumber")
-const assert = require("assert")
+const { expect } = require('chai')
 const eventually = require("./eventually.js")
 const fs = require("fs").promises
 const util = require("util")
@@ -56,7 +56,7 @@ Then("it contains a firmware for {} with a version of {}", function (type, versi
     }
   }
 
-  assert(found, `Firmware for ${type}:${version} not found in result list`)
+  expect(found, `Firmware for ${type}:${version} not found in result list`).to.be.true
 })
 
 Then("the service detects {} binar{}", {timeout: 60 * 1000}, async function (count, dummy) {
@@ -64,10 +64,10 @@ Then("the service detects {} binar{}", {timeout: 60 * 1000}, async function (cou
 })
 
 Then("the service sends the firmware binary for {} with version {}", function (type, version) {
-  assert.equal(this.requestResult.body, `data-for-${type}-${version}`)
+  expect(this.requestResult.body).to.equal(`data-for-${type}-${version}`)
 })
 
 Then("the a binary file for {} with a version of {} exists in the firmware directory", async function (type, version) {
   let files = await glob(path.join(this.tmpDir, "firmware", type, version, "*.bin"))
-  assert.equal(files.length, 1)
+  expect(files).to.have.length(1)
 })
