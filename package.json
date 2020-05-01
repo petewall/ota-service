@@ -19,7 +19,7 @@
     "http-status": "^1.4.2",
     "jquery": "^3.5.0",
     "mkdirp": "^1.0.4",
-    "moment": "^2.24.0",
+    "moment": "^2.25.0",
     "morgan": "^1.10.0",
     "semver": "^7.3.2"
   },
