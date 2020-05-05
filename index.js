@@ -97,41 +97,40 @@ app.patch("/api/device/:mac", (req, res) => {
 })
 
 app.get("/api/update", (req, res) => {
-  console.log(req)
-    let mac = req.get("x-esp8266-sta-mac")
-    let currentType = req.query.firmware
-    let currentVersion = req.query.version
-    let ipAddress = req.connection.remoteAddress.split(":").pop()
-    console.log(`New request from ${mac}: type: ${currentType} version: ${currentVersion}`)
+  let mac = req.get("x-esp8266-sta-mac")
+  let currentType = req.query.firmware
+  let currentVersion = req.query.version
+  let ipAddress = req.connection.remoteAddress.split(":").pop()
+  console.log(`New request from ${mac}: type: ${currentType} version: ${currentVersion}`)
 
-    let device = devices.updateDevice(mac, currentType, currentVersion, ipAddress)
-    if (!device.assignedFirmware) {
-      console.log("No firmware assigned.")
+  let device = devices.updateDevice(mac, currentType, currentVersion, ipAddress)
+  if (!device.assignedFirmware) {
+    console.log("No firmware assigned.")
+    return res.sendStatus(status.NOT_MODIFIED)
+  }
+
+  let latestFirmware = firmwareLibrary.getLatestForType(device.assignedFirmware)
+  if (!latestFirmware) {
+      console.log(`No firmware found for ${device.firmwareType}`)
+      devices.setState(mac, "up to date")
       return res.sendStatus(status.NOT_MODIFIED)
-    }
+  }
 
-    let latestFirmware = firmwareLibrary.getLatestForType(device.assignedFirmware)
-    if (!latestFirmware) {
-        console.log(`No firmware found for ${device.firmwareType}`)
-        devices.setState(mac, "up to date")
-        return res.sendStatus(status.NOT_MODIFIED)
-    }
+  if (device.firmwareType != device.assignedFirmware) {
+      console.log("Firmware type changed.  Sending new firmware: ", latestFirmware)
+      devices.setState(mac, "updating")
+      return res.sendFile(latestFirmware.file)
+  }
 
-    if (device.firmwareType != device.assignedFirmware) {
-        console.log("Firmware type changed.  Sending new firmware: ", latestFirmware)
-        devices.setState(mac, "updating")
-        return res.sendFile(latestFirmware.file)
-    }
+  if (semver.gt(latestFirmware.version, currentVersion)) {
+      console.log("Newer version available.  Sending new firmware: ", latestFirmware)
+      devices.setState(mac, "updating")
+      return res.sendFile(latestFirmware.file)
+  }
 
-    if (semver.gt(latestFirmware.version, currentVersion)) {
-        console.log("Newer version available.  Sending new firmware: ", latestFirmware)
-        devices.setState(mac, "updating")
-        return res.sendFile(latestFirmware.file)
-    }
-
-    console.log("Device is up to date")
-    devices.setState(mac, "up to date")
-    res.sendStatus(status.NOT_MODIFIED)
+  console.log("Device is up to date")
+  devices.setState(mac, "up to date")
+  res.sendStatus(status.NOT_MODIFIED)
 })
 
 app.post("/api/assign", (req, res) => {

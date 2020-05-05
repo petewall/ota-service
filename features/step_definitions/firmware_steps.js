@@ -35,6 +35,9 @@ When("a firmware binary for {} with a version of {} is added", async function (t
 When("I send a binary file for {} with a version of {}", function (type, version, done) {
   request.put(`http://localhost:${this.port}/api/firmware/${type}/${version}`, {
     body: "my-firmware-data",
+    headers: {
+      "Content-type": "application/octet-stream"
+    }
   }, (err, response, body) => {
     this.requestResult = { err, response, body }
     done()
