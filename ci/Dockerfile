@@ -5,7 +5,7 @@ RUN wget https://chromedriver.storage.googleapis.com/81.0.4044.69/chromedriver_l
 RUN unzip chromedriver_linux64.zip
 RUN chmod +x chromedriver
 
-FROM node:14-slim
+FROM node:15-slim
 
 ENV CI=true
 LABEL description="An image suitable for running feature tests"
