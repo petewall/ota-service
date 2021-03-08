@@ -6,7 +6,7 @@ LABEL maintainer="Pete Wall <pete@petewall.net>"
 
 # Install tools
 RUN apt-get update && \
-    apt-get install -y gnupg2 wget
+    apt-get install -y curl gnupg2 wget unzip
 
 # Install Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
