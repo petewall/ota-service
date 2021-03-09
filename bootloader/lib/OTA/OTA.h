@@ -5,8 +5,10 @@
 
 class OTA : public PeriodicAction {
 public:
-  OTA(unsigned long interval);
-  void run();
+  explicit OTA(unsigned long interval);
+
+protected:
+  void run() override;
 };
 
 #endif // __OTA_SERVICE_BOOTLOADER_OTA_H__

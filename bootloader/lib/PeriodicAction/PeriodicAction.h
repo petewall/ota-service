@@ -4,7 +4,9 @@
 class PeriodicAction {
 public:
   explicit PeriodicAction(unsigned long interval);
-  void check(unsigned long millis);
+  virtual void check(unsigned long millis);
+
+protected:
   virtual void run() = 0;
 
 private:

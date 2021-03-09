@@ -5,8 +5,10 @@
 
 class Blinker : public PeriodicAction {
 public:
-  Blinker(unsigned long interval);
-  void run();
+  explicit Blinker(unsigned long interval);
+
+protected:
+  void run() override;
 
 private:
   bool state;

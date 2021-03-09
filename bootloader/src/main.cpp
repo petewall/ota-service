@@ -22,6 +22,7 @@ void setupWifi() {
 
 #define ONE_MINUTE 60 * 1000
 
+// cppcheck-suppress unusedFunction
 void setup() {
   Serial.begin(115200);
   setupWifi();
@@ -29,6 +30,7 @@ void setup() {
   ota = new OTA(ONE_MINUTE);
 }
 
+// cppcheck-suppress unusedFunction
 void loop() {
   unsigned long now = millis();
   blinker->check(now);

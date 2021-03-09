@@ -27,7 +27,7 @@ check:
 	OTA_HOST="http://wallserver.local:8266" \
 	WIFI_SSID="${WIFI_SSID}" \
 	WIFI_PASSWORD="${WIFI_PASSWORD}" \
-		pio check --environment ota_bootloader --verbose
+		pio check --environment ota_bootloader --verbose --skip-packages
 
 upload:
 	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \
