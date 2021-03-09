@@ -18,7 +18,7 @@ test: build ${TEST_FILES}
 	$(call invoke-pio,test,--verbose)
 
 .pio/build/ota_bootloader/firmware.bin: platformio.ini ${SRC_FILES}
-	$(call invoke-pio,test)
+	$(call invoke-pio,run)
 
 build: .pio/build/ota_bootloader/firmware.bin
 
