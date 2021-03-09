@@ -1,0 +1,27 @@
+---
+platform: linux
+
+params:
+  FIRMWARE_TYPE: ota_bootloader
+  OTA_HOST:
+  WIFI_SSID:
+  WIFI_PASSWORD:
+
+inputs:
+  - name: source
+  - name: version
+
+outputs:
+  - name: binaries
+
+run:
+  path: sh
+  args:
+    - -exc
+    - |
+      export FIRMWARE_VERSION=$(cat version/version)
+      pio run \
+        --verbose \
+        --project-dir source/bootloader \
+        --environment ${FIRMWARE_TYPE}
+      cp source/bootloader/.pio/build/${FIRMWARE_TYPE}/firmware.bin binaries/${FIRMWARE_TYPE}-${FIRMWARE_VERSION}.bin
