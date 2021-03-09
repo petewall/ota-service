@@ -20,7 +20,7 @@ run:
   args:
     - -exc
     - |
-      export FIRMWARE_VERSION=$(cat version/version)
+      export FIRMWARE_VERSION=$(cat ../../version/version)
       make build
 
       cp .pio/build/${FIRMWARE_TYPE}/firmware.bin \
