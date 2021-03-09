@@ -1,9 +1,9 @@
-#ifndef __WALLHOUSE_PERIODIC_ACTION_H__
-#define __WALLHOUSE_PERIODIC_ACTION_H__
+#ifndef __OTA_SERVICE_BOOTLOADER_PERIODIC_ACTION_H__
+#define __OTA_SERVICE_BOOTLOADER_PERIODIC_ACTION_H__
 
 class PeriodicAction {
 public:
-  PeriodicAction(unsigned long interval);
+  explicit PeriodicAction(unsigned long interval);
   void check(unsigned long millis);
   virtual void run() = 0;
 
@@ -12,4 +12,4 @@ private:
   unsigned long next;
 };
 
-#endif // __WALLHOUSE_PERIODIC_ACTION_H__
+#endif // __OTA_SERVICE_BOOTLOADER_PERIODIC_ACTION_H__

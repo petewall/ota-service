@@ -1,5 +1,5 @@
-#ifndef __WALLHOUSE_BLINKER_H__
-#define __WALLHOUSE_BLINKER_H__
+#ifndef __OTA_SERVICE_BOOTLOADER_BLINKER_H__
+#define __OTA_SERVICE_BOOTLOADER_BLINKER_H__
 
 #include <PeriodicAction.h>
 
@@ -14,4 +14,4 @@ private:
   friend void test_blinker_state_low();
 };
 
-#endif // __WALLHOUSE_BLINKER_H__
+#endif // __OTA_SERVICE_BOOTLOADER_BLINKER_H__

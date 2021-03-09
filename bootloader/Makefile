@@ -22,6 +22,13 @@ WIFI_PASSWORD=$(shell cat ../../secrets/pipeline-creds.json | jq -r '.["wifi-pas
 
 build: .pio/build/ota_bootloader/firmware.bin
 
+check:
+	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \
+	OTA_HOST="http://wallserver.local:8266" \
+	WIFI_SSID="${WIFI_SSID}" \
+	WIFI_PASSWORD="${WIFI_PASSWORD}" \
+		pio check --environment ota_bootloader --verbose
+
 upload:
 	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \
 	OTA_HOST="http://wallserver.local:8266" \

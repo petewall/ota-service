@@ -1,5 +1,5 @@
-#ifndef __WALLHOUSE_OTA_H__
-#define __WALLHOUSE_OTA_H__
+#ifndef __OTA_SERVICE_BOOTLOADER_OTA_H__
+#define __OTA_SERVICE_BOOTLOADER_OTA_H__
 
 #include <PeriodicAction.h>
 
@@ -9,4 +9,4 @@ public:
   void run();
 };
 
-#endif // __WALLHOUSE_OTA_H__
+#endif // __OTA_SERVICE_BOOTLOADER_OTA_H__
