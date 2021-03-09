@@ -7,24 +7,24 @@ SRC_FILES := $(shell find . -path ./test -prune -false -o -name "*.cpp" -o -name
 TEST_FILES := $(shell find ./test -name "*.cpp" -o -name "*.h")
 
 test: build ${TEST_FILES}
-	pio test --environment bootloader --verbose
+	pio test --environment ota_bootloader --verbose
 
 FIRMWARE_VERSION=$(shell cat version)
 WIFI_SSID=$(shell cat ../../secrets/pipeline-creds.json | jq -r '.["wifi-ssid"]')
 WIFI_PASSWORD=$(shell cat ../../secrets/pipeline-creds.json | jq -r '.["wifi-password"]')
 
-.pio/build/booloader/firmware.bin: platformio.ini ${SRC_FILES}
+.pio/build/ota_bootloader/firmware.bin: platformio.ini ${SRC_FILES}
 	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \
 	OTA_HOST="http://wallserver.local:8266" \
 	WIFI_SSID="${WIFI_SSID}" \
 	WIFI_PASSWORD="${WIFI_PASSWORD}" \
-		pio run --environment bootloader
+		pio run --environment ota_bootloader
 
-build: .pio/build/booloader/firmware.bin
+build: .pio/build/ota_bootloader/firmware.bin
 
 upload:
 	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \
 	OTA_HOST="http://wallserver.local:8266" \
 	WIFI_SSID="${WIFI_SSID}" \
 	WIFI_PASSWORD="${WIFI_PASSWORD}" \
-		pio run --environment bootloader --target upload
+		pio run --environment ota_bootloader --target upload
