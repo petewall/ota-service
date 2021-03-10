@@ -2,7 +2,7 @@
 platform: linux
 
 params:
-  FIRMWARE_TYPE: ota_bootloader
+  FIRMWARE_TYPE: ota-bootloader
   OTA_HOST:
   WIFI_SSID:
   WIFI_PASSWORD:

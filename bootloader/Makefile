@@ -11,16 +11,16 @@ define invoke-pio
 	OTA_HOST="http://wallserver.local:8266" \
 	WIFI_SSID="${WIFI_SSID}" \
 	WIFI_PASSWORD="${WIFI_PASSWORD}" \
-		pio $1 --environment ota_bootloader $2 $3
+		pio $1 --environment ota-bootloader $2 $3
 endef
 
 test: build ${TEST_FILES}
 	$(call invoke-pio,test,--verbose)
 
-.pio/build/ota_bootloader/firmware.bin: platformio.ini ${SRC_FILES}
+.pio/build/ota-bootloader/firmware.bin: platformio.ini ${SRC_FILES}
 	$(call invoke-pio,run)
 
-build: .pio/build/ota_bootloader/firmware.bin
+build: .pio/build/ota-bootloader/firmware.bin
 
 check: ${SRC_FILES}
 	$(call invoke-pio,check,--verbose,--skip-packages)
