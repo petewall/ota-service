@@ -1,18 +1,18 @@
-$(document).ready(() => {
-  $(".firmwareSelector").change(function () {
-    let mac = $(this).parents("tr").attr("id")
-    let type = $(this).val()
+$(() => {
+  $(".firmwareSelector").on("change", function () {
+    const mac = $(this).parents("tr").attr("id")
+    const type = $(this).val()
     $.ajax({
       url: `/api/device/${mac}?firmware=${type}`,
       type: "PATCH",
     })
   })
 
-  $(".deleteFirmware.button").click(function () {
-    let row = $(this).parents("tr")
-    let filename = row.data("filename")
-    let type = row.data("type")
-    let version = row.data("version")
+  $(".deleteFirmware.button").on("click", function () {
+    const row = $(this).parents("tr")
+    const filename = row.data("filename")
+    const type = row.data("type")
+    const version = row.data("version")
 
     if (confirm(`Are you sure you want to delete the firmare ${type} ${version}?\n\nThis cannot be undone.`)) {
       $.ajax({
@@ -25,4 +25,3 @@ $(document).ready(() => {
     }
   })
 })
-

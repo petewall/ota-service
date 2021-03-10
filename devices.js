@@ -55,10 +55,16 @@ class Devices {
   }
 
   assignFirmware(mac, type) {
-    console.log(`[Device] Setting ${mac} to firmware ${type}`)
     this.getOrCreate(mac, "prepared")
-    this.devices[mac].assignedFirmware = type
-    this.setState(mac, "reassigned")
+    if (type) {
+      console.log(`[Device] Assigning ${mac} to firmware ${type}`)
+      this.devices[mac].assignedFirmware = type
+      this.setState(mac, "reassigned")
+    } else {
+      console.log(`[Device] Removing firmware assignment for ${mac}`)
+      delete this.devices[mac].assignedFirmware
+      this.setState(mac, "unassigned")
+    }
   }
 }
 

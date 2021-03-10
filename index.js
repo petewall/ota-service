@@ -90,9 +90,7 @@ app.get("/api/device/:mac/:field", (req, res) => {
 })
 
 app.patch("/api/device/:mac", (req, res) => {
-  if (req.query.firmware) {
-    devices.assignFirmware(req.params.mac, req.query.firmware)
-  }
+  devices.assignFirmware(req.params.mac, req.query.firmware)
   res.sendStatus(status.OK)
 })
 

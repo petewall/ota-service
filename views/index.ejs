@@ -30,7 +30,7 @@
           <td class="state"><%= device.state %></td>
           <td>
             <select class="firmwareSelector">
-              <option disabled="disabled" <% if (!Boolean(firmwareTypes.filter((type) => type == device.assignedFirmware).length)) { %>selected="selected"<% } %>>Unassigned</option>
+              <option value="" <% if (!Boolean(firmwareTypes.filter((type) => type == device.assignedFirmware).length)) { %>selected="selected"<% } %>>Unassigned</option>
               <% firmwareTypes.forEach((type) => { %>
                 <option value="<%= type %>" <% if (device.assignedFirmware == type) { %>selected="selected"<% } %>>
                   <%= type %>

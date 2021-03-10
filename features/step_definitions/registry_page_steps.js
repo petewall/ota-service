@@ -69,6 +69,13 @@ When("I select {} from the dropdown of firmware for {} on the registry page", as
   await row.findElement(By.tagName("select")).sendKeys(type)
 })
 
+When("I set the firmware type for {} to unassigned", async function (mac) {
+  let row = await findDeviceInTable(this.driver, mac)
+  expect(row, `Device ${mac} not found in device list`).to.not.be.undefined
+
+  await row.findElement(By.tagName("select")).sendKeys("Unassigned")
+})
+
 When("I click the delete button for {} with a version of {}", async function (type, version) {
   let row = await findFirmwareInTable(this.driver, type, version)
   expect(row, `Firmware ${type} ${version} not found in firmware list`).to.not.be.undefined

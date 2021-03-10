@@ -51,7 +51,11 @@ When("I assign a firmware type of {} to {}", function (type, mac, done) {
 })
 
 Then("the firmware {} is assigned to {}", async function (type, mac) {
-  await eventually(() => this.serviceStdout.indexOf(`[Device] Setting ${mac} to firmware ${type}`) >= 0)
+  await eventually(() => this.serviceStdout.indexOf(`[Device] Assigning ${mac} to firmware ${type}`) >= 0)
+})
+
+Then("the device {} in unassigned", async function (mac) {
+  await eventually(() => this.serviceStdout.indexOf(`[Device] Removing firmware assignment for ${mac}`) >= 0)
 })
 
 Then("it contains a device with mac {} running {} version {}", function (mac, type, version) {
