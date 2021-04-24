@@ -26,3 +26,10 @@ build: lint deps
 
 run: deps
 	PORT=8266 DATA_DIR=$(shell pwd)/data ./index.js
+
+# CI targets
+set-pipeline:
+	fly -t wallhouse set-pipeline \
+		--load-vars-from ../secrets/pipeline-creds.json \
+		--pipeline ota-service \
+		--config ci/pipeline.yaml

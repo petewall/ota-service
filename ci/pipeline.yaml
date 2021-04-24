@@ -1,0 +1,270 @@
+resource_types:
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: teliaoss/github-pr-resource
+
+resources:
+  - name: source
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/ota-service.git
+      branch: master
+      ignore_paths:
+        - bootloader/*
+        - bootloader/**
+        - ci/*
+        - ci/**
+      private_key: ((github-repo-key))
+
+  - name: bootloader-source
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/ota-service.git
+      branch: master
+      paths:
+        - bootloader/*
+        - bootloader/**
+      private_key: ((github-repo-key))
+
+  - name: bootloader-version
+    type: semver
+    icon: github
+    source:
+      driver: git
+      uri: git@github.com:petewall/ota-service.git
+      branch: master
+      file: bootloader/version
+      private_key: ((github-repo-key))
+      commit_message: "[ci skip] bump to %version%"
+
+  - name: image
+    type: docker-image
+    icon: docker
+    source:
+      repository: petewall/ota-service
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: platformio
+    type: docker-image
+    icon: docker
+    source:
+      repository: petewall/platformio
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: feature-test-image-source
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:petewall/ota-service.git
+      branch: master
+      paths:
+        - ci/Dockerfile
+      private_key: ((github-repo-key))
+
+  - name: feature-test-image
+    type: docker-image
+    icon: docker
+    source:
+      repository: petewall/ota-service-test
+      username: ((dockerhub-username))
+      password: ((dockerhub-password))
+
+  - name: pull-requests
+    type: pull-request
+    source:
+      repository: petewall/ota-service
+      access_token: ((github-access-token))
+
+jobs:
+  - name: build-feature-test-image
+    plan:
+      - get: feature-test-image-source
+        trigger: true
+      - put: feature-test-image
+        params:
+          build: feature-test-image-source/ci
+      - task: compare-chromedriver-versions
+        image: feature-test-image
+        config:
+          platform: linux
+          run:
+            path: bash
+            args:
+              - -exc
+              - |
+                chromedriver_version=$(chromedriver --version | cut -d" " -f2 | cut -d"." -f1)
+                google_chrome_version=$(google-chrome --version | cut -d" " -f3 | cut -d"." -f1)
+                test "${chromedriver_version}" == "${google_chrome_version}"
+
+  - name: test
+    plan:
+      - in_parallel:
+        - get: feature-test-image
+          passed:
+            - build-feature-test-image
+        - get: source
+          trigger: true
+      - task: deps
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: slim
+          inputs:
+            - name: source
+          outputs:
+            - name: source
+          run:
+            dir: source
+            path: npm
+            args: [install]
+      - task: lint
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: slim
+          inputs:
+            - name: source
+          run:
+            dir: source
+            path: npm
+            args: [run, lint]
+      - task: test
+        image: feature-test-image
+        config:
+          platform: linux
+          inputs:
+            - name: source
+          params:
+            CI: true
+            DEBUG: "browser,otaService:*"
+          run:
+            dir: source
+            path: npm
+            args: [test]
+
+  - name: build-image
+    plan:
+      - get: source
+        trigger: true
+        passed:
+          - test
+      - put: image
+        params:
+          build: source
+
+  - name: build-bootloader-firmware
+    plan:
+      - in_parallel:
+        - get: platformio
+        - get: version
+          resource: bootloader-version
+          params:
+            bump: patch
+        - get: source
+          resource: bootloader-source
+          trigger: true
+        - get: ota-source
+          resource: source
+          passed:
+            - test
+      - task: check
+        image: platformio
+        config:
+          platform: linux
+          params:
+            FIRMEARE_VERSION: 0.0.0
+            OTA_HOST: http://wallserver.local:8266
+            WIFI_SSID: fake-ssid
+            WIFI_PASSWORD: fake-password
+          inputs:
+            - name: source
+          run:
+            dir: source/bootloader
+            path: make
+            args: ["check"]
+      - task: build
+        image: platformio
+        file: source/bootloader/ci/tasks/build.yml
+        params:
+          OTA_HOST: http://wallserver.local:8266
+          WIFI_SSID: ((wifi-ssid))
+          WIFI_PASSWORD: ((wifi-password))
+      - task: upload-firmware
+        file: ota-source/ci/tasks/upload.yml
+        params:
+          OTA_SERVICE: http://wallserver.local:8266
+          TYPE: ota-bootloader
+      - put: bootloader-version
+        params:
+          file: version/version
+
+  - name: test-pull-request
+    plan:
+      - get: feature-test-image
+        passed:
+          - build-feature-test-image
+      - get: source
+        resource: pull-requests
+        trigger: true
+        version: every
+        params:
+          integration_tool: rebase
+      - put: pull-requests
+        params:
+          path: source
+          status: pending
+
+      - task: deps
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: node
+              tag: slim
+          inputs:
+            - name: source
+          outputs:
+            - name: source
+          run:
+            dir: source
+            path: npm
+            args: [install]
+        on_failure:
+          put: pull-requests
+          params:
+            path: source
+            status: failure
+      - task: test
+        image: feature-test-image
+        config:
+          platform: linux
+          inputs:
+            - name: source
+          params:
+            CI: true
+            DEBUG: "browser,otaService:*"
+          run:
+            dir: source
+            path: npm
+            args: [test]
+        on_failure:
+          put: pull-requests
+          params:
+            path: source
+            status: failure
+      - put: pull-requests
+        params:
+          path: source
+          status: success
