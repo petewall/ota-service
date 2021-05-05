@@ -8,7 +8,7 @@ public:
   explicit Blinker(unsigned long interval);
 
 protected:
-  void run() override;
+  bool run() override;
 
 private:
   bool state;

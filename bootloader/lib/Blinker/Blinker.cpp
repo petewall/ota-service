@@ -7,9 +7,10 @@ Blinker::Blinker(unsigned long interval)
   pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void Blinker::run() {
+bool Blinker::run() {
   this->state = !this->state;
   digitalWrite(LED_BUILTIN, this->state ? HIGH : LOW);
   Serial.print("[Blinker] ");
   Serial.println(this->state ? "on" : "off");
+  return true;
 }
