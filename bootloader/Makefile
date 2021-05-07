@@ -26,7 +26,7 @@ endef
 .pio/build/ota-bootloader/firmware.bin: platformio.ini ${SRC_FILES}
 	$(call invoke-pio,run)
 
-build: .pio/build/ota-bootloader/firmware.bin .pio/libdeps/depspulled
+build: .pio/libdeps/depspulled .pio/build/ota-bootloader/firmware.bin
 
 check: ${SRC_FILES} .pio/libdeps/depspulled
 	$(call invoke-pio,check,--verbose,--skip-packages)
