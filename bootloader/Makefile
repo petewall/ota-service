@@ -29,7 +29,7 @@ endef
 build: .pio/libdeps/depspulled .pio/build/ota-bootloader/firmware.bin
 
 check: ${SRC_FILES} .pio/libdeps/depspulled
-	$(call invoke-pio,check,--verbose,--skip-packages)
+	pio check --verbose --skip-packages
 
 upload:
 	$(call invoke-pio,run,--target,upload)
