@@ -1,4 +1,4 @@
-FROM node:16-slim
+FROM node:17-slim
 
 LABEL description="An image for running the WallHouse OTA Service"
 LABEL maintainer="Pete Wall <pete@petewall.net>"
