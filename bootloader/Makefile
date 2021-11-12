@@ -1,3 +1,4 @@
+SHELL = /bin/bash
 .PHONY: build clean test
 
 clean:
@@ -13,6 +14,13 @@ SRC_FILES := $(shell find . -path ./test -prune -false -o -name "*.cpp" -o -name
 	touch .pio/libdeps/depspulled
 
 deps: .pio/libdeps/depspulled
+
+deps.env: deps.env.template
+	envsubst < deps.env.template > deps.env
+	cat deps.env
+
+platformio.ini: deps.env platformio.ini.template
+	set -o allexport; . deps.env; envsubst < platformio.ini.template > platformio.ini
 
 define invoke-pio
 	FIRMWARE_VERSION="${FIRMWARE_VERSION}" \

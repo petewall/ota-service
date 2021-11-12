@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Blinker.h>
-#include <ReliableNetwork.h>
 #include <ESP8266httpUpdate.h>
 #include <OTAClient.h>
 
@@ -18,7 +17,7 @@ void setup() {
   network = new ReliableNetwork(WIFI_SSID, WIFI_PASSWORD);
   network->connect();
 
-  ota = new OTAClient(ONE_MINUTE, OTA_HOSTNAME, OTA_PORT, network);
+  ota = new OTAClient(OTA_HOSTNAME, OTA_PORT, network, ONE_MINUTE);
 }
 
 // cppcheck-suppress unusedFunction

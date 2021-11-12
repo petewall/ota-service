@@ -21,5 +21,5 @@ build_flags =
   -D WIFI_SSID="\"${sysenv.WIFI_SSID}\""
   -D WIFI_PASSWORD="\"${sysenv.WIFI_PASSWORD}\""
 lib_deps =
-  https://github.com/ESPete/OTAClient.git#v0.0.3
-  https://github.com/ESPete/PeriodicAction.git#v0.0.3
+  https://github.com/ESPete/OTAClient.git#v${OTA_CLIENT_VERSION}
+  https://github.com/ESPete/PeriodicAction.git#v${PERIODIC_ACTION_VERSION}
