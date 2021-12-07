@@ -27,7 +27,7 @@
     "chai": "^4.3.4",
     "cucumber": "^6.0.5",
     "debug": "^4.3.2",
-    "eslint": "^8.2.0",
+    "eslint": "^8.4.1",
     "get-port": "5.1.1",
     "request": "^2.88.2",
     "rimraf": "^3.0.2",
