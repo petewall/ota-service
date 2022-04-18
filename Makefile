@@ -43,13 +43,19 @@ ifndef HAS_COUNTERFEITER
 endif
 	go generate lib/firmware_service.go
 
+lib/libfakes/fake_updater.go: lib/updater.go
+ifndef HAS_COUNTERFEITER
+	cd /; go get github.com/maxbrunsfeld/counterfeiter/v6
+endif
+	go generate lib/updater.go
+
 # #### TEST ####
 .PHONY: lint
 
 lint: deps-golangci-lint
 	golangci-lint run
 
-test: lib/libfakes/fake_device_service.go lib/libfakes/fake_firmware_service.go deps-modules deps-ginkgo
+test: lib/libfakes/fake_device_service.go lib/libfakes/fake_firmware_service.go lib/libfakes/fake_updater.go deps-modules deps-ginkgo
 	ginkgo -r -skipPackage test .
 
 # integration-test: deps-modules deps-ginkgo

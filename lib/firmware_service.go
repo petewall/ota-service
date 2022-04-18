@@ -12,6 +12,7 @@ type Firmware struct {
 //counterfeiter:generate . FirmwareService
 type FirmwareService interface {
 	GetFirmware(firmwareType, firmwareVersion string) (*Firmware, error)
+	GetLatestFirmware(firmwareType string) (*Firmware, error)
 }
 
 type FirmwareServiceImpl struct {
@@ -20,5 +21,9 @@ type FirmwareServiceImpl struct {
 }
 
 func (f *FirmwareServiceImpl) GetFirmware(firmwareType, firmwareVersion string) (*Firmware, error) {
+	return nil, nil
+}
+
+func (f *FirmwareServiceImpl) GetLatestFirmware(firmwareType string) (*Firmware, error) {
 	return nil, nil
 }
