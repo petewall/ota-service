@@ -1,4 +1,4 @@
-FROM node:17-slim
+FROM node:18-slim
 
 ENV CI=true
 LABEL description="An image suitable for running feature tests"
