@@ -17,6 +17,14 @@ type UpdaterImpl struct {
 }
 
 func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, error) {
+	if mac == "" {
+		return nil, fmt.Errorf("mac not set")
+	}
+
+	if currentFirmware == nil {
+		return nil, fmt.Errorf("firmware not set")
+	}
+
 	device, err := u.DeviceService.GetDevice(mac)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get device")

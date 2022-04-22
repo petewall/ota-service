@@ -1,5 +1,5 @@
 GO_VERSION := $(shell go version)
-GO_VERSION_REQUIRED = go1.17
+GO_VERSION_REQUIRED = go1.18
 GO_VERSION_MATCHED := $(shell go version | grep $(GO_VERSION_REQUIRED))
 HAS_GINKGO := $(shell command -v ginkgo;)
 HAS_GOLANGCI_LINT := $(shell command -v golangci-lint;)

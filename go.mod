@@ -1,6 +1,6 @@
 module github.com/petewall/ota-service/v2
 
-go 1.17
+go 1.18
 
 require (
 	github.com/felixge/httpsnoop v1.0.1 // indirect
