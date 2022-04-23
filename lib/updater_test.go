@@ -1,6 +1,8 @@
 package lib_test
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/petewall/ota-service/v2/lib"
@@ -40,11 +42,25 @@ var _ = Describe("Updater", func() {
 		})
 
 		When("device service fails to get device details", func() {
-			XIt("returns an error", func() {})
+			BeforeEach(func() {
+				deviceService.GetDeviceReturns(nil, errors.New("get device failed"))
+			})
+			It("returns an error", func() {
+				_, err := updater.Update("aa:bb:cc:dd:ee:ff", &Firmware{
+					Type:    "bootstrap",
+					Version: "1.0.0",
+				})
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("unable to get device: get device failed"))
+			})
 		})
 
 		Context("device service has not seen the device before", func() {
-			When("an update request comes it", func() {
+			BeforeEach(func() {
+				deviceService.GetDeviceReturns(nil, nil)
+			})
+
+			When("an update request comes in", func() {
 				XIt("returns no firmware", func() {
 					By("updating the device service", func() {})
 				})
@@ -52,10 +68,11 @@ var _ = Describe("Updater", func() {
 		})
 
 		Context("existing device has no assigned firmware", func() {
-			When("an update request comes it", func() {
+			When("an update request comes in", func() {
 				XIt("returns no firmware", func() {})
 			})
 		})
+
 		Context("existing device has no assigned firmware version", func() {
 			When("an update request comes in from a device with different firmware", func() {
 				XIt("returns the latest assigned firmware", func() {})

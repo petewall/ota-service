@@ -27,7 +27,7 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 
 	device, err := u.DeviceService.GetDevice(mac)
 	if err != nil {
-		return nil, fmt.Errorf("unable to get device")
+		return nil, fmt.Errorf("unable to get device: %w", err)
 	}
 
 	if device == nil {
