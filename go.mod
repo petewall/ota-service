@@ -3,6 +3,7 @@ module github.com/petewall/ota-service/v2
 go 1.18
 
 require (
+	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect

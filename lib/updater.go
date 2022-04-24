@@ -35,9 +35,11 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 	}
 
 	if device.IsDifferent(currentFirmware) {
+		device.CurrentFirmware = currentFirmware.Type
+		device.CurrentVersion = currentFirmware.Version
 		err = u.DeviceService.UpdateDevice(device)
 		if err != nil {
-			return nil, fmt.Errorf("unable to update device")
+			return nil, fmt.Errorf("unable to update device: %w", err)
 		}
 	}
 
@@ -51,20 +53,22 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 			if device.IsDifferent(assigned) {
 				firmware, err := u.FirmwareService.GetFirmware(device.AssignedFirmware, device.AssignedVersion)
 				if err != nil {
-					return nil, fmt.Errorf("unable to get firmware")
+					return nil, fmt.Errorf("unable to get firmware: %w", err)
 				}
 
 				return firmware, nil
+			} else {
+				return nil, nil
 			}
 		}
 
 		// Floating version
 		firmware, err := u.FirmwareService.GetLatestFirmware(device.AssignedFirmware)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get latest firmware")
+			return nil, fmt.Errorf("unable to get latest firmware: %w", err)
 		}
 
-		if device.IsDifferent(firmware) {
+		if device.IsOlderThan(firmware) {
 			return firmware, nil
 		}
 	}
