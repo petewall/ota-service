@@ -1,0 +1,14 @@
+---
+platform: linux
+
+inputs:
+  - name: source
+
+run:
+  path: sh
+  dir: source
+  args:
+    - -exc
+    - |
+      apk add --update g++ make
+      make lint
