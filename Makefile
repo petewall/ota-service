@@ -19,12 +19,17 @@ endif
 
 deps-ginkgo: deps-go-binary
 ifndef HAS_GINKGO
-	cd /; go get github.com/onsi/ginkgo/ginkgo github.com/onsi/gomega
+	go install github.com/onsi/ginkgo/ginkgo@latest
 endif
 
 deps-golangci-lint: deps-go-binary
 ifndef HAS_GOLANGCI_LINT
-	cd /; go get github.com/golangci/golangci-lint/cmd/golangci-lint
+ifeq ($(PLATFORM), Darwin)
+	brew install golangci-lint
+endif
+ifeq ($(PLATFORM), Linux)
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.45.2
+endif
 endif
 
 deps-modules: deps-go-binary
@@ -33,19 +38,19 @@ deps-modules: deps-go-binary
 # #### SRC ####
 lib/libfakes/fake_device_service.go: lib/device_service.go
 ifndef HAS_COUNTERFEITER
-	cd /; go get github.com/maxbrunsfeld/counterfeiter/v6
+	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
 endif
 	go generate lib/device_service.go
 
 lib/libfakes/fake_firmware_service.go: lib/firmware_service.go
 ifndef HAS_COUNTERFEITER
-	cd /; go get github.com/maxbrunsfeld/counterfeiter/v6
+	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
 endif
 	go generate lib/firmware_service.go
 
 lib/libfakes/fake_updater.go: lib/updater.go
 ifndef HAS_COUNTERFEITER
-	cd /; go get github.com/maxbrunsfeld/counterfeiter/v6
+	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
 endif
 	go generate lib/updater.go
 
