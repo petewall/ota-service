@@ -53,7 +53,7 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Write(firmware.Data)
+	_, _ = w.Write(firmware.Data)
 }
 
 func (a *API) GetMux() http.Handler {
