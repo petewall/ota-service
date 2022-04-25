@@ -15,13 +15,15 @@ var rootCmd = &cobra.Command{
 	Short: "A brief description of your application",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		api := &API{
-			DeviceService: &DeviceServiceImpl{
-				Host: viper.GetString("device_service.host"),
-				Port: viper.GetInt("device_service.port"),
-			},
-			FirmwareService: &FirmwareServiceImpl{
-				Host: viper.GetString("firmware_service.host"),
-				Port: viper.GetInt("firmware_service.port"),
+			Updater: &UpdaterImpl{
+				DeviceService: &DeviceServiceImpl{
+					Host: viper.GetString("device_service.host"),
+					Port: viper.GetInt("device_service.port"),
+				},
+				FirmwareService: &FirmwareServiceImpl{
+					Host: viper.GetString("firmware_service.host"),
+					Port: viper.GetInt("firmware_service.port"),
+				},
 			},
 			LogOutput: cmd.OutOrStdout(),
 		}
