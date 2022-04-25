@@ -17,8 +17,9 @@ var rootCmd = &cobra.Command{
 		api := &API{
 			Updater: &UpdaterImpl{
 				DeviceService: &DeviceServiceImpl{
-					Host: viper.GetString("device_service.host"),
-					Port: viper.GetInt("device_service.port"),
+					Host:       viper.GetString("device_service.host"),
+					Port:       viper.GetInt("device_service.port"),
+					HTTPClient: http.DefaultClient,
 				},
 				FirmwareService: &FirmwareServiceImpl{
 					Host: viper.GetString("firmware_service.host"),
