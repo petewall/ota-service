@@ -204,7 +204,41 @@ var _ = Describe("Updater", func() {
 					Expect(deviceService.UpdateDeviceCallCount()).To(Equal(0))
 					Expect(firmwareService.GetFirmwareCallCount()).To(Equal(0))
 					Expect(firmwareService.GetLatestFirmwareCallCount()).To(Equal(1))
-					Expect(firmwareService.GetLatestFirmwareArgsForCall(0)).To(Equal("temp-sensor"))
+					firmwareType, acceptsPrerelease := firmwareService.GetLatestFirmwareArgsForCall(0)
+					Expect(firmwareType).To(Equal("temp-sensor"))
+					Expect(acceptsPrerelease).To(BeFalse())
+				})
+
+				When("the device accepts prerelease firmware", func() {
+					BeforeEach(func() {
+						deviceService.GetDeviceReturns(&Device{
+							MAC:               "aa:bb:cc:dd:ee:ff",
+							CurrentFirmware:   "bootstrap",
+							CurrentVersion:    "1.0.0",
+							AssignedFirmware:  "temp-sensor",
+							AcceptsPrerelease: true,
+						}, nil)
+					})
+					It("passes that along to the firmware service request", func() {
+						firmware, err := updater.Update("aa:bb:cc:dd:ee:ff", &Firmware{
+							Type:    "bootstrap",
+							Version: "1.0.0",
+						})
+						Expect(err).ToNot(HaveOccurred())
+						Expect(firmware.Type).To(Equal("temp-sensor"))
+						Expect(firmware.Version).To(Equal("1.2.3"))
+						Expect(firmware.Size).To(Equal(16))
+						Expect(firmware.Data).To(Equal([]byte("temp-sensor data")))
+
+						Expect(deviceService.GetDeviceCallCount()).To(Equal(1))
+						Expect(deviceService.GetDeviceArgsForCall(0)).To(Equal("aa:bb:cc:dd:ee:ff"))
+						Expect(deviceService.UpdateDeviceCallCount()).To(Equal(0))
+						Expect(firmwareService.GetFirmwareCallCount()).To(Equal(0))
+						Expect(firmwareService.GetLatestFirmwareCallCount()).To(Equal(1))
+						firmwareType, acceptsPrerelease := firmwareService.GetLatestFirmwareArgsForCall(0)
+						Expect(firmwareType).To(Equal("temp-sensor"))
+						Expect(acceptsPrerelease).To(BeTrue())
+					})
 				})
 			})
 

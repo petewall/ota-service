@@ -15,14 +15,6 @@ import (
 	. "github.com/petewall/ota-service/v2/lib/libfakes"
 )
 
-type FailingReader struct {
-	Message string
-}
-
-func (r *FailingReader) Read(p []byte) (n int, err error) {
-	return 0, errors.New(r.Message)
-}
-
 var _ = Describe("Device Service", func() {
 	var (
 		httpClient    *FakeHTTPClient
@@ -35,26 +27,28 @@ var _ = Describe("Device Service", func() {
 			Port:       9876,
 			HTTPClient: httpClient,
 		}
-
-		device := &Device{
-			MAC:              "aa:bb:cc:dd:ee:ff",
-			CurrentFirmware:  "bootstrap",
-			CurrentVersion:   "1.2.3",
-			AssignedFirmware: "switch",
-			AssignedVersion:  "2.0.0",
-		}
-
-		encoded, err := json.Marshal(device)
-		Expect(err).ToNot(HaveOccurred())
-
-		response := &http.Response{
-			StatusCode: http.StatusOK,
-			Body:       ioutil.NopCloser(bytes.NewReader(encoded)),
-		}
-		httpClient.GetReturns(response, nil)
 	})
 
 	Describe("GetDevice", func() {
+		BeforeEach(func() {
+			device := &Device{
+				MAC:              "aa:bb:cc:dd:ee:ff",
+				CurrentFirmware:  "bootstrap",
+				CurrentVersion:   "1.2.3",
+				AssignedFirmware: "switch",
+				AssignedVersion:  "2.0.0",
+			}
+
+			encoded, err := json.Marshal(device)
+			Expect(err).ToNot(HaveOccurred())
+
+			response := &http.Response{
+				StatusCode: http.StatusOK,
+				Body:       ioutil.NopCloser(bytes.NewReader(encoded)),
+			}
+			httpClient.GetReturns(response, nil)
+		})
+
 		It("returns the device", func() {
 			device, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
 			Expect(err).ToNot(HaveOccurred())
@@ -72,7 +66,7 @@ var _ = Describe("Device Service", func() {
 			It("returns an error", func() {
 				_, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("failed to get device: get device failed"))
+				Expect(err.Error()).To(Equal("failed to get device aa:bb:cc:dd:ee:ff: get device failed"))
 			})
 		})
 
@@ -87,7 +81,7 @@ var _ = Describe("Device Service", func() {
 			It("returns an error", func() {
 				_, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("failed to read device response: read failed"))
+				Expect(err.Error()).To(Equal("failed to read device aa:bb:cc:dd:ee:ff response: read failed"))
 			})
 		})
 
@@ -102,7 +96,7 @@ var _ = Describe("Device Service", func() {
 			It("returns an error", func() {
 				_, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("failed to parse device response: invalid character 'h' in literal true (expecting 'r')"))
+				Expect(err.Error()).To(Equal("failed to parse device aa:bb:cc:dd:ee:ff response: invalid character 'h' in literal true (expecting 'r')"))
 			})
 		})
 	})
@@ -144,7 +138,7 @@ var _ = Describe("Device Service", func() {
 
 		When("the request fails", func() {
 			BeforeEach(func() {
-				httpClient.PostReturns(nil, errors.New("update device failed"))
+				httpClient.PostReturns(nil, errors.New("update device aa:bb:cc:dd:ee:ff failed"))
 			})
 
 			It("returns an error", func() {
@@ -156,7 +150,7 @@ var _ = Describe("Device Service", func() {
 					AssignedVersion:  "2.0.0",
 				})
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("failed to send device update request: update device failed"))
+				Expect(err.Error()).To(Equal("failed to send device aa:bb:cc:dd:ee:ff update request: update device aa:bb:cc:dd:ee:ff failed"))
 			})
 		})
 
@@ -177,7 +171,7 @@ var _ = Describe("Device Service", func() {
 					AssignedVersion:  "2.0.0",
 				})
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("device update request failed (418): i'm a teapot"))
+				Expect(err.Error()).To(Equal("device aa:bb:cc:dd:ee:ff update request failed (418): i'm a teapot"))
 			})
 
 			When("you cannot read the response body", func() {
@@ -196,7 +190,7 @@ var _ = Describe("Device Service", func() {
 						AssignedVersion:  "2.0.0",
 					})
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(Equal("device update request failed (418), and failed to get response body: oops, all errors"))
+					Expect(err.Error()).To(Equal("device aa:bb:cc:dd:ee:ff update request failed (418), and failed to get response body: oops, all errors"))
 				})
 			})
 		})

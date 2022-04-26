@@ -63,7 +63,7 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 		}
 
 		// Floating version
-		firmware, err := u.FirmwareService.GetLatestFirmware(device.AssignedFirmware)
+		firmware, err := u.FirmwareService.GetLatestFirmware(device.AssignedFirmware, device.AcceptsPrerelease)
 		if err != nil {
 			return nil, fmt.Errorf("unable to get latest firmware: %w", err)
 		}

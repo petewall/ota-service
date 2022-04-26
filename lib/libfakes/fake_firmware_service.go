@@ -22,10 +22,11 @@ type FakeFirmwareService struct {
 		result1 *lib.Firmware
 		result2 error
 	}
-	GetLatestFirmwareStub        func(string) (*lib.Firmware, error)
+	GetLatestFirmwareStub        func(string, bool) (*lib.Firmware, error)
 	getLatestFirmwareMutex       sync.RWMutex
 	getLatestFirmwareArgsForCall []struct {
 		arg1 string
+		arg2 bool
 	}
 	getLatestFirmwareReturns struct {
 		result1 *lib.Firmware
@@ -104,18 +105,19 @@ func (fake *FakeFirmwareService) GetFirmwareReturnsOnCall(i int, result1 *lib.Fi
 	}{result1, result2}
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmware(arg1 string) (*lib.Firmware, error) {
+func (fake *FakeFirmwareService) GetLatestFirmware(arg1 string, arg2 bool) (*lib.Firmware, error) {
 	fake.getLatestFirmwareMutex.Lock()
 	ret, specificReturn := fake.getLatestFirmwareReturnsOnCall[len(fake.getLatestFirmwareArgsForCall)]
 	fake.getLatestFirmwareArgsForCall = append(fake.getLatestFirmwareArgsForCall, struct {
 		arg1 string
-	}{arg1})
+		arg2 bool
+	}{arg1, arg2})
 	stub := fake.GetLatestFirmwareStub
 	fakeReturns := fake.getLatestFirmwareReturns
-	fake.recordInvocation("GetLatestFirmware", []interface{}{arg1})
+	fake.recordInvocation("GetLatestFirmware", []interface{}{arg1, arg2})
 	fake.getLatestFirmwareMutex.Unlock()
 	if stub != nil {
-		return stub(arg1)
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -129,17 +131,17 @@ func (fake *FakeFirmwareService) GetLatestFirmwareCallCount() int {
 	return len(fake.getLatestFirmwareArgsForCall)
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareCalls(stub func(string) (*lib.Firmware, error)) {
+func (fake *FakeFirmwareService) GetLatestFirmwareCalls(stub func(string, bool) (*lib.Firmware, error)) {
 	fake.getLatestFirmwareMutex.Lock()
 	defer fake.getLatestFirmwareMutex.Unlock()
 	fake.GetLatestFirmwareStub = stub
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareArgsForCall(i int) string {
+func (fake *FakeFirmwareService) GetLatestFirmwareArgsForCall(i int) (string, bool) {
 	fake.getLatestFirmwareMutex.RLock()
 	defer fake.getLatestFirmwareMutex.RUnlock()
 	argsForCall := fake.getLatestFirmwareArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeFirmwareService) GetLatestFirmwareReturns(result1 *lib.Firmware, result2 error) {
