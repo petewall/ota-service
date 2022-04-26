@@ -1,8 +1,12 @@
 package lib
 
-import "net/http"
+import (
+	"io"
+	"net/http"
+)
 
 //counterfeiter:generate . HTTPClient
 type HTTPClient interface {
-	Get(url string) (resp *http.Response, err error)
+	Get(url string) (*http.Response, error)
+	Post(url, contentType string, content io.Reader) (*http.Response, error)
 }

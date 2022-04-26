@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -54,16 +55,14 @@ var _ = Describe("Device Service", func() {
 	})
 
 	Describe("GetDevice", func() {
-		When("getting a device", func() {
-			It("returns the device", func() {
-				device, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
-				Expect(err).ToNot(HaveOccurred())
-				Expect(device.MAC).To(Equal("aa:bb:cc:dd:ee:ff"))
-				Expect(device.CurrentFirmware).To(Equal("bootstrap"))
-				Expect(device.CurrentVersion).To(Equal("1.2.3"))
-				Expect(device.AssignedFirmware).To(Equal("switch"))
-				Expect(device.AssignedVersion).To(Equal("2.0.0"))
-			})
+		It("returns the device", func() {
+			device, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
+			Expect(err).ToNot(HaveOccurred())
+			Expect(device.MAC).To(Equal("aa:bb:cc:dd:ee:ff"))
+			Expect(device.CurrentFirmware).To(Equal("bootstrap"))
+			Expect(device.CurrentVersion).To(Equal("1.2.3"))
+			Expect(device.AssignedFirmware).To(Equal("switch"))
+			Expect(device.AssignedVersion).To(Equal("2.0.0"))
 		})
 
 		When("getting the device fails", func() {
@@ -104,6 +103,101 @@ var _ = Describe("Device Service", func() {
 				_, err := deviceService.GetDevice("aa:bb:cc:dd:ee:ff")
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(Equal("failed to parse device response: invalid character 'h' in literal true (expecting 'r')"))
+			})
+		})
+	})
+
+	Describe("UpdateDevice", func() {
+		BeforeEach(func() {
+			httpClient.PostReturns(&http.Response{
+				StatusCode: http.StatusOK,
+			}, nil)
+		})
+
+		It("posts the device", func() {
+			err := deviceService.UpdateDevice(&Device{
+				MAC:              "aa:bb:cc:dd:ee:ff",
+				CurrentFirmware:  "bootstrap",
+				CurrentVersion:   "1.2.3",
+				AssignedFirmware: "switch",
+				AssignedVersion:  "2.0.0",
+			})
+			Expect(err).ToNot(HaveOccurred())
+
+			Expect(httpClient.PostCallCount()).To(Equal(1))
+			url, contentType, body := httpClient.PostArgsForCall(0)
+			Expect(url).To(Equal("http://example.petewall.net:9876/aa:bb:cc:dd:ee:ff"))
+			Expect(contentType).To(Equal("application/json"))
+
+			deviceContent, err := ioutil.ReadAll(body)
+			Expect(err).ToNot(HaveOccurred())
+
+			var device *Device
+			err = json.Unmarshal(deviceContent, &device)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(device.MAC).To(Equal("aa:bb:cc:dd:ee:ff"))
+			Expect(device.CurrentFirmware).To(Equal("bootstrap"))
+			Expect(device.CurrentVersion).To(Equal("1.2.3"))
+			Expect(device.AssignedFirmware).To(Equal("switch"))
+			Expect(device.AssignedVersion).To(Equal("2.0.0"))
+		})
+
+		When("the request fails", func() {
+			BeforeEach(func() {
+				httpClient.PostReturns(nil, errors.New("update device failed"))
+			})
+
+			It("returns an error", func() {
+				err := deviceService.UpdateDevice(&Device{
+					MAC:              "aa:bb:cc:dd:ee:ff",
+					CurrentFirmware:  "bootstrap",
+					CurrentVersion:   "1.2.3",
+					AssignedFirmware: "switch",
+					AssignedVersion:  "2.0.0",
+				})
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("failed to send device update request: update device failed"))
+			})
+		})
+
+		When("the response status is not OK", func() {
+			BeforeEach(func() {
+				httpClient.PostReturns(&http.Response{
+					StatusCode: http.StatusTeapot,
+					Body:       io.NopCloser(strings.NewReader("i'm a teapot")),
+				}, nil)
+			})
+
+			It("returns an error with the response body", func() {
+				err := deviceService.UpdateDevice(&Device{
+					MAC:              "aa:bb:cc:dd:ee:ff",
+					CurrentFirmware:  "bootstrap",
+					CurrentVersion:   "1.2.3",
+					AssignedFirmware: "switch",
+					AssignedVersion:  "2.0.0",
+				})
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(Equal("device update request failed (418): i'm a teapot"))
+			})
+
+			When("you cannot read the response body", func() {
+				BeforeEach(func() {
+					httpClient.PostReturns(&http.Response{
+						StatusCode: http.StatusTeapot,
+						Body:       io.NopCloser(&FailingReader{Message: "oops, all errors"}),
+					}, nil)
+				})
+				It("returns an error without the response body", func() {
+					err := deviceService.UpdateDevice(&Device{
+						MAC:              "aa:bb:cc:dd:ee:ff",
+						CurrentFirmware:  "bootstrap",
+						CurrentVersion:   "1.2.3",
+						AssignedFirmware: "switch",
+						AssignedVersion:  "2.0.0",
+					})
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(Equal("device update request failed (418), and failed to get response body: oops, all errors"))
+				})
 			})
 		})
 	})

@@ -1,9 +1,11 @@
 package lib
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
 //go:generate counterfeiter -generate
@@ -41,5 +43,24 @@ func (d *DeviceServiceImpl) GetDevice(mac string) (*Device, error) {
 }
 
 func (d *DeviceServiceImpl) UpdateDevice(device *Device) error {
+	encoded, err := json.Marshal(device)
+	if err != nil {
+		return fmt.Errorf("failed to prepare device update request body: %w", err)
+	}
+
+	url := fmt.Sprintf("http://%s:%d/%s", d.Host, d.Port, device.MAC)
+	resp, err := d.HTTPClient.Post(url, "application/json", bytes.NewReader(encoded))
+	if err != nil {
+		return fmt.Errorf("failed to send device update request: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("device update request failed (%d), and failed to get response body: %w", resp.StatusCode, err)
+		}
+		return fmt.Errorf("device update request failed (%d): %s", resp.StatusCode, string(body))
+	}
+
 	return nil
 }
