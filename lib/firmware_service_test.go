@@ -97,6 +97,7 @@ var _ = Describe("Firmware Service", func() {
 	})
 
 	Describe("GetLatestFirmware", func() {
+
 	})
 })
 

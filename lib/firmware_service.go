@@ -8,13 +8,6 @@ import (
 
 //go:generate counterfeiter -generate
 
-type Firmware struct {
-	Type    string `json:"type"`
-	Version string `json:"version"`
-	Size    int    `json:"size"`
-	Data    []byte `json:"data"`
-}
-
 //counterfeiter:generate . FirmwareService
 type FirmwareService interface {
 	GetFirmware(firmwareType, firmwareVersion string) (*Firmware, error)
@@ -48,5 +41,21 @@ func (f *FirmwareServiceImpl) GetFirmware(firmwareType, firmwareVersion string) 
 }
 
 func (f *FirmwareServiceImpl) GetLatestFirmware(firmwareType string, includePrerelease bool) (*Firmware, error) {
-	return nil, nil
+	resp, err := f.HTTPClient.Get(fmt.Sprintf("http://%s:%d/%s", f.Host, f.Port, firmwareType))
+	if err != nil {
+		return nil, fmt.Errorf("failed to get list of firmware %s: %w", firmwareType, err)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read list of firmware %s response: %w", firmwareType, err)
+	}
+
+	var firmwareList FirmwareList
+	err = json.Unmarshal(body, &firmwareList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse list of firmware %s response: %w", firmwareType, err)
+	}
+
+	return firmwareList.GetLatest(includePrerelease), nil
 }
