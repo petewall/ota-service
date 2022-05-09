@@ -60,7 +60,6 @@ var _ = Describe("FirmwareList", func() {
 			list = FirmwareList{
 				&Firmware{Type: "a", Version: "3.0.0-rc.1"},
 				&Firmware{Type: "a", Version: "1.0.0"},
-				&Firmware{Type: "a", Version: "3.0.0"},
 				&Firmware{Type: "a", Version: "1.0.0-rc.1"},
 				&Firmware{Type: "a", Version: "2.0.0"},
 			}
@@ -69,7 +68,7 @@ var _ = Describe("FirmwareList", func() {
 		It("returns the latest version", func() {
 			firmware := list.GetLatest(false)
 			Expect(firmware).ToNot(BeNil())
-			Expect(firmware.Version).To(Equal("3.0.0"))
+			Expect(firmware.Version).To(Equal("2.0.0"))
 		})
 
 		When("accepting prerelease versions", func() {
