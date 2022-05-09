@@ -118,4 +118,27 @@ var _ = Describe("FirmwareList", func() {
 			Expect(firmwareList[3].Version).To(Equal("3.0.0"))
 		})
 	})
+
+	Describe("FilterOutPrerelease", func() {
+		It("filters out prerelease versions", func() {
+			firmwareList := FirmwareList{
+				&Firmware{Type: "a", Version: "1.0.0"},
+				&Firmware{Type: "a", Version: "3.0.0"},
+				&Firmware{Type: "a", Version: "1.0.0-rc.1"},
+				&Firmware{Type: "a", Version: "2.0.0"},
+			}
+			filtered := firmwareList.FilterOutPrerelease()
+			Expect(filtered[0].Version).To(Equal("1.0.0"))
+			Expect(filtered[1].Version).To(Equal("3.0.0"))
+			Expect(filtered[2].Version).To(Equal("2.0.0"))
+		})
+
+		Context("empty list", func() {
+			It("returns an empty list", func() {
+				firmwareList := FirmwareList{}
+				filtered := firmwareList.FilterOutPrerelease()
+				Expect(filtered).To(BeEmpty())
+			})
+		})
+	})
 })
