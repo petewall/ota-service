@@ -10,5 +10,5 @@ run:
   args:
     - -exc
     - |
-      apk add --update g++ make
+      apk add bash curl gcc libc-dev make
       make test
