@@ -1,4 +1,4 @@
-package lib
+package internal
 
 type Device struct {
 	MAC               string `json:"mac" redis:"mac"`

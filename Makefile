@@ -1,73 +1,57 @@
-GO_VERSION := $(shell go version)
-GO_VERSION_REQUIRED = go1.18
-GO_VERSION_MATCHED := $(shell go version | grep $(GO_VERSION_REQUIRED))
+SHELL := /bin/bash
+
 HAS_GINKGO := $(shell command -v ginkgo;)
 HAS_GOLANGCI_LINT := $(shell command -v golangci-lint;)
 HAS_COUNTERFEITER := $(shell command -v counterfeiter;)
+PLATFORM := $(shell uname -s)
 
 # #### DEPS ####
-.PHONY: deps-go-binary deps-golangci-lint deps-modules
+.PHONY: deps-counterfeiter deps-ginkgo deps-modules
 
-deps-go-binary:
-ifndef GO_VERSION
-	$(error Go not installed)
+deps-counterfeiter:
+ifndef HAS_COUNTERFEITER
+	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
 endif
-ifndef GO_VERSION_MATCHED
-	$(error Required Go version is $(GO_VERSION_REQUIRED), but was $(GO_VERSION))
-endif
-	@:
 
-deps-ginkgo: deps-go-binary
+deps-ginkgo:
 ifndef HAS_GINKGO
-	go install github.com/onsi/ginkgo/ginkgo@latest
+	go install github.com/onsi/ginkgo/v2/ginkgo
 endif
 
-deps-golangci-lint: deps-go-binary
+deps-modules:
+	go mod download
+
+# #### SRC ####
+internal/internalfakes/fake_device_service.go: internal/device_service.go
+	go generate internal/device_service.go
+
+internal/internalfakes/fake_firmware_service.go: internal/firmware_service.go
+	go generate internal/firmware_service.go
+
+internal/internalfakes/fake_updater.go: internal/updater.go
+	go generate internal/updater.go
+
+# #### TEST ####
+.PHONY: lint test-units test-features test
+
+lint: deps-modules
 ifndef HAS_GOLANGCI_LINT
 ifeq ($(PLATFORM), Darwin)
 	brew install golangci-lint
 endif
 ifeq ($(PLATFORM), Linux)
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.45.2
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
 endif
 endif
-
-deps-modules: deps-go-binary
-	go mod download
-
-# #### SRC ####
-lib/libfakes/fake_device_service.go: lib/device_service.go
-ifndef HAS_COUNTERFEITER
-	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
-endif
-	go generate lib/device_service.go
-
-lib/libfakes/fake_firmware_service.go: lib/firmware_service.go
-ifndef HAS_COUNTERFEITER
-	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
-endif
-	go generate lib/firmware_service.go
-
-lib/libfakes/fake_updater.go: lib/updater.go
-ifndef HAS_COUNTERFEITER
-	go install github.com/maxbrunsfeld/counterfeiter/v6@latest
-endif
-	go generate lib/updater.go
-
-# #### TEST ####
-.PHONY: lint
-
-lint: deps-golangci-lint
 	golangci-lint run
 
-test: lib/libfakes/fake_device_service.go lib/libfakes/fake_firmware_service.go lib/libfakes/fake_updater.go deps-modules deps-ginkgo
-	ginkgo -r -skipPackage test .
+test-units: internal/internalfakes/fake_device_service.go internal/internalfakes/fake_firmware_service.go internal/internalfakes/fake_updater.go deps-modules deps-ginkgo
+	ginkgo -r -skip-package test .
 
-# integration-test: deps-modules deps-ginkgo
-# 	ginkgo -r test/integration
+test-features: deps-modules deps-ginkgo
+	ginkgo -r test
 
-# test-all: lib/libfakes/fake_dbinterface.go deps-modules deps-ginkgo
-# 	ginkgo -r .
+test: lint test-units test-features
 
 # #### BUILD ####
 .PHONY: build
@@ -79,7 +63,7 @@ build/ota-service: $(SOURCES) deps-modules
 build: build/ota-service
 
 build-image:
-	pack build ota-service --env-file vars.env --builder gcr.io/buildpacks/builder:v1
+	docker build -t petewall/ota-service .
 
 # #### RUN ####
 .PHONY: run

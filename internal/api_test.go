@@ -1,15 +1,15 @@
-package lib_test
+package internal_test
 
 import (
 	"fmt"
+	. "github.com/petewall/ota-service/v2/internal"
 	"net/http"
 	"net/http/httptest"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
-	. "github.com/petewall/ota-service/v2/lib"
-	. "github.com/petewall/ota-service/v2/lib/libfakes"
+	. "github.com/petewall/ota-service/v2/internal/internalfakes"
 )
 
 var _ = Describe("API", func() {

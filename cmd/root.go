@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	. "github.com/petewall/ota-service/v2/internal"
 	"net/http"
 	"os"
 
-	. "github.com/petewall/ota-service/v2/lib"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

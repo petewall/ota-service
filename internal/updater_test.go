@@ -1,12 +1,11 @@
-package lib_test
+package internal_test
 
 import (
 	"errors"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/petewall/ota-service/v2/lib"
-	. "github.com/petewall/ota-service/v2/lib/libfakes"
+	. "github.com/petewall/ota-service/v2/internal"
+	. "github.com/petewall/ota-service/v2/internal/internalfakes"
 )
 
 var _ = Describe("Updater", func() {

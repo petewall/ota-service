@@ -1,17 +1,17 @@
-package lib_test
+package internal_test
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	. "github.com/petewall/ota-service/v2/internal"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/petewall/ota-service/v2/lib"
-	. "github.com/petewall/ota-service/v2/lib/libfakes"
+	. "github.com/petewall/ota-service/v2/internal/internalfakes"
 )
 
 var _ = Describe("Firmware Service", func() {

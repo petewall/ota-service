@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine AS builder
+FROM golang:1.19-alpine AS builder
 
 WORKDIR /ota-service
 
@@ -7,7 +7,8 @@ COPY . /ota-service/
 ARG GOOS=linux
 ARG GOARCH=amd64
 
-RUN apk add git make && make build
+RUN apk add bash make
+RUN make build
 
 FROM alpine
 
