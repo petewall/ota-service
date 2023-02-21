@@ -1,8 +1,9 @@
-package test
+package test_test
 
 import (
 	"fmt"
 	. "github.com/onsi/gomega/gbytes"
+	"github.com/onsi/gomega/ghttp"
 	"os/exec"
 	"testing"
 	"time"
@@ -10,7 +11,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gexec"
-	"github.com/petewall/ota-service/v2/lib"
+	"github.com/petewall/ota-service/lib"
 	"github.com/phayes/freeport"
 )
 
@@ -23,12 +24,14 @@ var (
 	client            lib.Client
 	otaService        string
 	otaServiceSession *gexec.Session
-	otaServiceURL     string
+
+	deviceService   *ghttp.Server
+	firmwareService *ghttp.Server
 )
 
 var _ = BeforeSuite(func() {
 	var err error
-	otaService, err = gexec.Build("github.com/petewall/ota-service/v2")
+	otaService, err = gexec.Build("github.com/petewall/ota-service")
 	Expect(err).ToNot(HaveOccurred())
 })
 
@@ -37,26 +40,32 @@ var _ = AfterSuite(func() {
 })
 
 var _ = BeforeEach(func() {
+	deviceService = ghttp.NewServer()
+	firmwareService = ghttp.NewServer()
+
 	port, err := freeport.GetFreePort()
 	Expect(err).ToNot(HaveOccurred())
-	otaServiceURL = fmt.Sprintf("http://localhost:%d", port)
-	client = lib.Client{
-		Host: otaServiceURL,
-	}
 	args := []string{
 		"--port", fmt.Sprintf("%d", port),
+		"--device-service", deviceService.URL(),
+		"--firmware-service", firmwareService.URL(),
 	}
 	command := exec.Command(otaService, args...)
 	otaServiceSession, err = gexec.Start(command, GinkgoWriter, GinkgoWriter)
 	Expect(err).ToNot(HaveOccurred())
 	Eventually(otaServiceSession.Out, 10*time.Second).Should(Say("Listening on port"))
 
-	Seed()
+	client = lib.Client{
+		Host: fmt.Sprintf("http://localhost:%d", port),
+	}
 })
 
 var _ = AfterEach(func() {
 	otaServiceSession.Terminate().Wait()
 	Eventually(otaServiceSession).Should(gexec.Exit())
+
+	deviceService.Close()
+	firmwareService.Close()
 })
 
 func Seed() {

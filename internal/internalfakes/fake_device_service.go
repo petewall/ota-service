@@ -4,27 +4,30 @@ package internalfakes
 import (
 	"sync"
 
-	"github.com/petewall/ota-service/v2/internal"
+	"github.com/petewall/device-service/lib"
+	"github.com/petewall/ota-service/internal"
 )
 
 type FakeDeviceService struct {
-	GetDeviceStub        func(string) (*internal.Device, error)
+	GetDeviceStub        func(string) (*lib.Device, error)
 	getDeviceMutex       sync.RWMutex
 	getDeviceArgsForCall []struct {
 		arg1 string
 	}
 	getDeviceReturns struct {
-		result1 *internal.Device
+		result1 *lib.Device
 		result2 error
 	}
 	getDeviceReturnsOnCall map[int]struct {
-		result1 *internal.Device
+		result1 *lib.Device
 		result2 error
 	}
-	UpdateDeviceStub        func(*internal.Device) error
+	UpdateDeviceStub        func(string, string, string) error
 	updateDeviceMutex       sync.RWMutex
 	updateDeviceArgsForCall []struct {
-		arg1 *internal.Device
+		arg1 string
+		arg2 string
+		arg3 string
 	}
 	updateDeviceReturns struct {
 		result1 error
@@ -36,7 +39,7 @@ type FakeDeviceService struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDeviceService) GetDevice(arg1 string) (*internal.Device, error) {
+func (fake *FakeDeviceService) GetDevice(arg1 string) (*lib.Device, error) {
 	fake.getDeviceMutex.Lock()
 	ret, specificReturn := fake.getDeviceReturnsOnCall[len(fake.getDeviceArgsForCall)]
 	fake.getDeviceArgsForCall = append(fake.getDeviceArgsForCall, struct {
@@ -61,7 +64,7 @@ func (fake *FakeDeviceService) GetDeviceCallCount() int {
 	return len(fake.getDeviceArgsForCall)
 }
 
-func (fake *FakeDeviceService) GetDeviceCalls(stub func(string) (*internal.Device, error)) {
+func (fake *FakeDeviceService) GetDeviceCalls(stub func(string) (*lib.Device, error)) {
 	fake.getDeviceMutex.Lock()
 	defer fake.getDeviceMutex.Unlock()
 	fake.GetDeviceStub = stub
@@ -74,44 +77,46 @@ func (fake *FakeDeviceService) GetDeviceArgsForCall(i int) string {
 	return argsForCall.arg1
 }
 
-func (fake *FakeDeviceService) GetDeviceReturns(result1 *internal.Device, result2 error) {
+func (fake *FakeDeviceService) GetDeviceReturns(result1 *lib.Device, result2 error) {
 	fake.getDeviceMutex.Lock()
 	defer fake.getDeviceMutex.Unlock()
 	fake.GetDeviceStub = nil
 	fake.getDeviceReturns = struct {
-		result1 *internal.Device
+		result1 *lib.Device
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeDeviceService) GetDeviceReturnsOnCall(i int, result1 *internal.Device, result2 error) {
+func (fake *FakeDeviceService) GetDeviceReturnsOnCall(i int, result1 *lib.Device, result2 error) {
 	fake.getDeviceMutex.Lock()
 	defer fake.getDeviceMutex.Unlock()
 	fake.GetDeviceStub = nil
 	if fake.getDeviceReturnsOnCall == nil {
 		fake.getDeviceReturnsOnCall = make(map[int]struct {
-			result1 *internal.Device
+			result1 *lib.Device
 			result2 error
 		})
 	}
 	fake.getDeviceReturnsOnCall[i] = struct {
-		result1 *internal.Device
+		result1 *lib.Device
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeDeviceService) UpdateDevice(arg1 *internal.Device) error {
+func (fake *FakeDeviceService) UpdateDevice(arg1 string, arg2 string, arg3 string) error {
 	fake.updateDeviceMutex.Lock()
 	ret, specificReturn := fake.updateDeviceReturnsOnCall[len(fake.updateDeviceArgsForCall)]
 	fake.updateDeviceArgsForCall = append(fake.updateDeviceArgsForCall, struct {
-		arg1 *internal.Device
-	}{arg1})
+		arg1 string
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
 	stub := fake.UpdateDeviceStub
 	fakeReturns := fake.updateDeviceReturns
-	fake.recordInvocation("UpdateDevice", []interface{}{arg1})
+	fake.recordInvocation("UpdateDevice", []interface{}{arg1, arg2, arg3})
 	fake.updateDeviceMutex.Unlock()
 	if stub != nil {
-		return stub(arg1)
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -125,17 +130,17 @@ func (fake *FakeDeviceService) UpdateDeviceCallCount() int {
 	return len(fake.updateDeviceArgsForCall)
 }
 
-func (fake *FakeDeviceService) UpdateDeviceCalls(stub func(*internal.Device) error) {
+func (fake *FakeDeviceService) UpdateDeviceCalls(stub func(string, string, string) error) {
 	fake.updateDeviceMutex.Lock()
 	defer fake.updateDeviceMutex.Unlock()
 	fake.UpdateDeviceStub = stub
 }
 
-func (fake *FakeDeviceService) UpdateDeviceArgsForCall(i int) *internal.Device {
+func (fake *FakeDeviceService) UpdateDeviceArgsForCall(i int) (string, string, string) {
 	fake.updateDeviceMutex.RLock()
 	defer fake.updateDeviceMutex.RUnlock()
 	argsForCall := fake.updateDeviceArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeDeviceService) UpdateDeviceReturns(result1 error) {

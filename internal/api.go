@@ -36,24 +36,20 @@ func (a *API) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	firmware, err := a.Updater.Update(mac, &Firmware{
-		Type:    currentType,
-		Version: currentVersion,
-	})
-
+	firmwareData, err := a.Updater.Update(mac, currentType, currentVersion)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		_, _ = w.Write([]byte(fmt.Sprintf("failed to get update: %s", err.Error())))
+		_, _ = fmt.Fprintf(w, "failed to get update: %s", err.Error())
 		return
 	}
 
-	if firmware == nil {
+	if firmwareData == nil {
 		w.WriteHeader(http.StatusNotModified)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	_, _ = w.Write(firmware.Data)
+	_, _ = w.Write(firmwareData)
 }
 
 func (a *API) GetMux() http.Handler {

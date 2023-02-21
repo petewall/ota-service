@@ -4,43 +4,57 @@ package internalfakes
 import (
 	"sync"
 
-	"github.com/petewall/ota-service/v2/internal"
+	"github.com/petewall/firmware-service/lib"
+	"github.com/petewall/ota-service/internal"
 )
 
 type FakeFirmwareService struct {
-	GetFirmwareStub        func(string, string) (*internal.Firmware, error)
+	GetFirmwareStub        func(string, string) (*lib.Firmware, error)
 	getFirmwareMutex       sync.RWMutex
 	getFirmwareArgsForCall []struct {
 		arg1 string
 		arg2 string
 	}
 	getFirmwareReturns struct {
-		result1 *internal.Firmware
+		result1 *lib.Firmware
 		result2 error
 	}
 	getFirmwareReturnsOnCall map[int]struct {
-		result1 *internal.Firmware
+		result1 *lib.Firmware
 		result2 error
 	}
-	GetLatestFirmwareStub        func(string, bool) (*internal.Firmware, error)
-	getLatestFirmwareMutex       sync.RWMutex
-	getLatestFirmwareArgsForCall []struct {
+	GetFirmwareByTypeStub        func(string) (lib.FirmwareList, error)
+	getFirmwareByTypeMutex       sync.RWMutex
+	getFirmwareByTypeArgsForCall []struct {
 		arg1 string
-		arg2 bool
 	}
-	getLatestFirmwareReturns struct {
-		result1 *internal.Firmware
+	getFirmwareByTypeReturns struct {
+		result1 lib.FirmwareList
 		result2 error
 	}
-	getLatestFirmwareReturnsOnCall map[int]struct {
-		result1 *internal.Firmware
+	getFirmwareByTypeReturnsOnCall map[int]struct {
+		result1 lib.FirmwareList
+		result2 error
+	}
+	GetFirmwareDataStub        func(string, string) ([]byte, error)
+	getFirmwareDataMutex       sync.RWMutex
+	getFirmwareDataArgsForCall []struct {
+		arg1 string
+		arg2 string
+	}
+	getFirmwareDataReturns struct {
+		result1 []byte
+		result2 error
+	}
+	getFirmwareDataReturnsOnCall map[int]struct {
+		result1 []byte
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeFirmwareService) GetFirmware(arg1 string, arg2 string) (*internal.Firmware, error) {
+func (fake *FakeFirmwareService) GetFirmware(arg1 string, arg2 string) (*lib.Firmware, error) {
 	fake.getFirmwareMutex.Lock()
 	ret, specificReturn := fake.getFirmwareReturnsOnCall[len(fake.getFirmwareArgsForCall)]
 	fake.getFirmwareArgsForCall = append(fake.getFirmwareArgsForCall, struct {
@@ -66,7 +80,7 @@ func (fake *FakeFirmwareService) GetFirmwareCallCount() int {
 	return len(fake.getFirmwareArgsForCall)
 }
 
-func (fake *FakeFirmwareService) GetFirmwareCalls(stub func(string, string) (*internal.Firmware, error)) {
+func (fake *FakeFirmwareService) GetFirmwareCalls(stub func(string, string) (*lib.Firmware, error)) {
 	fake.getFirmwareMutex.Lock()
 	defer fake.getFirmwareMutex.Unlock()
 	fake.GetFirmwareStub = stub
@@ -79,43 +93,107 @@ func (fake *FakeFirmwareService) GetFirmwareArgsForCall(i int) (string, string) 
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeFirmwareService) GetFirmwareReturns(result1 *internal.Firmware, result2 error) {
+func (fake *FakeFirmwareService) GetFirmwareReturns(result1 *lib.Firmware, result2 error) {
 	fake.getFirmwareMutex.Lock()
 	defer fake.getFirmwareMutex.Unlock()
 	fake.GetFirmwareStub = nil
 	fake.getFirmwareReturns = struct {
-		result1 *internal.Firmware
+		result1 *lib.Firmware
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeFirmwareService) GetFirmwareReturnsOnCall(i int, result1 *internal.Firmware, result2 error) {
+func (fake *FakeFirmwareService) GetFirmwareReturnsOnCall(i int, result1 *lib.Firmware, result2 error) {
 	fake.getFirmwareMutex.Lock()
 	defer fake.getFirmwareMutex.Unlock()
 	fake.GetFirmwareStub = nil
 	if fake.getFirmwareReturnsOnCall == nil {
 		fake.getFirmwareReturnsOnCall = make(map[int]struct {
-			result1 *internal.Firmware
+			result1 *lib.Firmware
 			result2 error
 		})
 	}
 	fake.getFirmwareReturnsOnCall[i] = struct {
-		result1 *internal.Firmware
+		result1 *lib.Firmware
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmware(arg1 string, arg2 bool) (*internal.Firmware, error) {
-	fake.getLatestFirmwareMutex.Lock()
-	ret, specificReturn := fake.getLatestFirmwareReturnsOnCall[len(fake.getLatestFirmwareArgsForCall)]
-	fake.getLatestFirmwareArgsForCall = append(fake.getLatestFirmwareArgsForCall, struct {
+func (fake *FakeFirmwareService) GetFirmwareByType(arg1 string) (lib.FirmwareList, error) {
+	fake.getFirmwareByTypeMutex.Lock()
+	ret, specificReturn := fake.getFirmwareByTypeReturnsOnCall[len(fake.getFirmwareByTypeArgsForCall)]
+	fake.getFirmwareByTypeArgsForCall = append(fake.getFirmwareByTypeArgsForCall, struct {
 		arg1 string
-		arg2 bool
+	}{arg1})
+	stub := fake.GetFirmwareByTypeStub
+	fakeReturns := fake.getFirmwareByTypeReturns
+	fake.recordInvocation("GetFirmwareByType", []interface{}{arg1})
+	fake.getFirmwareByTypeMutex.Unlock()
+	if stub != nil {
+		return stub(arg1)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeFirmwareService) GetFirmwareByTypeCallCount() int {
+	fake.getFirmwareByTypeMutex.RLock()
+	defer fake.getFirmwareByTypeMutex.RUnlock()
+	return len(fake.getFirmwareByTypeArgsForCall)
+}
+
+func (fake *FakeFirmwareService) GetFirmwareByTypeCalls(stub func(string) (lib.FirmwareList, error)) {
+	fake.getFirmwareByTypeMutex.Lock()
+	defer fake.getFirmwareByTypeMutex.Unlock()
+	fake.GetFirmwareByTypeStub = stub
+}
+
+func (fake *FakeFirmwareService) GetFirmwareByTypeArgsForCall(i int) string {
+	fake.getFirmwareByTypeMutex.RLock()
+	defer fake.getFirmwareByTypeMutex.RUnlock()
+	argsForCall := fake.getFirmwareByTypeArgsForCall[i]
+	return argsForCall.arg1
+}
+
+func (fake *FakeFirmwareService) GetFirmwareByTypeReturns(result1 lib.FirmwareList, result2 error) {
+	fake.getFirmwareByTypeMutex.Lock()
+	defer fake.getFirmwareByTypeMutex.Unlock()
+	fake.GetFirmwareByTypeStub = nil
+	fake.getFirmwareByTypeReturns = struct {
+		result1 lib.FirmwareList
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeFirmwareService) GetFirmwareByTypeReturnsOnCall(i int, result1 lib.FirmwareList, result2 error) {
+	fake.getFirmwareByTypeMutex.Lock()
+	defer fake.getFirmwareByTypeMutex.Unlock()
+	fake.GetFirmwareByTypeStub = nil
+	if fake.getFirmwareByTypeReturnsOnCall == nil {
+		fake.getFirmwareByTypeReturnsOnCall = make(map[int]struct {
+			result1 lib.FirmwareList
+			result2 error
+		})
+	}
+	fake.getFirmwareByTypeReturnsOnCall[i] = struct {
+		result1 lib.FirmwareList
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeFirmwareService) GetFirmwareData(arg1 string, arg2 string) ([]byte, error) {
+	fake.getFirmwareDataMutex.Lock()
+	ret, specificReturn := fake.getFirmwareDataReturnsOnCall[len(fake.getFirmwareDataArgsForCall)]
+	fake.getFirmwareDataArgsForCall = append(fake.getFirmwareDataArgsForCall, struct {
+		arg1 string
+		arg2 string
 	}{arg1, arg2})
-	stub := fake.GetLatestFirmwareStub
-	fakeReturns := fake.getLatestFirmwareReturns
-	fake.recordInvocation("GetLatestFirmware", []interface{}{arg1, arg2})
-	fake.getLatestFirmwareMutex.Unlock()
+	stub := fake.GetFirmwareDataStub
+	fakeReturns := fake.getFirmwareDataReturns
+	fake.recordInvocation("GetFirmwareData", []interface{}{arg1, arg2})
+	fake.getFirmwareDataMutex.Unlock()
 	if stub != nil {
 		return stub(arg1, arg2)
 	}
@@ -125,47 +203,47 @@ func (fake *FakeFirmwareService) GetLatestFirmware(arg1 string, arg2 bool) (*int
 	return fakeReturns.result1, fakeReturns.result2
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareCallCount() int {
-	fake.getLatestFirmwareMutex.RLock()
-	defer fake.getLatestFirmwareMutex.RUnlock()
-	return len(fake.getLatestFirmwareArgsForCall)
+func (fake *FakeFirmwareService) GetFirmwareDataCallCount() int {
+	fake.getFirmwareDataMutex.RLock()
+	defer fake.getFirmwareDataMutex.RUnlock()
+	return len(fake.getFirmwareDataArgsForCall)
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareCalls(stub func(string, bool) (*internal.Firmware, error)) {
-	fake.getLatestFirmwareMutex.Lock()
-	defer fake.getLatestFirmwareMutex.Unlock()
-	fake.GetLatestFirmwareStub = stub
+func (fake *FakeFirmwareService) GetFirmwareDataCalls(stub func(string, string) ([]byte, error)) {
+	fake.getFirmwareDataMutex.Lock()
+	defer fake.getFirmwareDataMutex.Unlock()
+	fake.GetFirmwareDataStub = stub
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareArgsForCall(i int) (string, bool) {
-	fake.getLatestFirmwareMutex.RLock()
-	defer fake.getLatestFirmwareMutex.RUnlock()
-	argsForCall := fake.getLatestFirmwareArgsForCall[i]
+func (fake *FakeFirmwareService) GetFirmwareDataArgsForCall(i int) (string, string) {
+	fake.getFirmwareDataMutex.RLock()
+	defer fake.getFirmwareDataMutex.RUnlock()
+	argsForCall := fake.getFirmwareDataArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareReturns(result1 *internal.Firmware, result2 error) {
-	fake.getLatestFirmwareMutex.Lock()
-	defer fake.getLatestFirmwareMutex.Unlock()
-	fake.GetLatestFirmwareStub = nil
-	fake.getLatestFirmwareReturns = struct {
-		result1 *internal.Firmware
+func (fake *FakeFirmwareService) GetFirmwareDataReturns(result1 []byte, result2 error) {
+	fake.getFirmwareDataMutex.Lock()
+	defer fake.getFirmwareDataMutex.Unlock()
+	fake.GetFirmwareDataStub = nil
+	fake.getFirmwareDataReturns = struct {
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeFirmwareService) GetLatestFirmwareReturnsOnCall(i int, result1 *internal.Firmware, result2 error) {
-	fake.getLatestFirmwareMutex.Lock()
-	defer fake.getLatestFirmwareMutex.Unlock()
-	fake.GetLatestFirmwareStub = nil
-	if fake.getLatestFirmwareReturnsOnCall == nil {
-		fake.getLatestFirmwareReturnsOnCall = make(map[int]struct {
-			result1 *internal.Firmware
+func (fake *FakeFirmwareService) GetFirmwareDataReturnsOnCall(i int, result1 []byte, result2 error) {
+	fake.getFirmwareDataMutex.Lock()
+	defer fake.getFirmwareDataMutex.Unlock()
+	fake.GetFirmwareDataStub = nil
+	if fake.getFirmwareDataReturnsOnCall == nil {
+		fake.getFirmwareDataReturnsOnCall = make(map[int]struct {
+			result1 []byte
 			result2 error
 		})
 	}
-	fake.getLatestFirmwareReturnsOnCall[i] = struct {
-		result1 *internal.Firmware
+	fake.getFirmwareDataReturnsOnCall[i] = struct {
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }
@@ -175,8 +253,10 @@ func (fake *FakeFirmwareService) Invocations() map[string][][]interface{} {
 	defer fake.invocationsMutex.RUnlock()
 	fake.getFirmwareMutex.RLock()
 	defer fake.getFirmwareMutex.RUnlock()
-	fake.getLatestFirmwareMutex.RLock()
-	defer fake.getLatestFirmwareMutex.RUnlock()
+	fake.getFirmwareByTypeMutex.RLock()
+	defer fake.getFirmwareByTypeMutex.RUnlock()
+	fake.getFirmwareDataMutex.RLock()
+	defer fake.getFirmwareDataMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value

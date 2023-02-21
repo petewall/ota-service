@@ -6,7 +6,7 @@ import (
 	"github.com/onsi/gomega/ghttp"
 	"net/http"
 
-	"github.com/petewall/ota-service/v2/lib"
+	"github.com/petewall/ota-service/lib"
 )
 
 var _ = Describe("Client", func() {
@@ -85,7 +85,7 @@ var _ = Describe("Client", func() {
 			It("returns an error", func() {
 				_, err := client.Update("aa:bb:cc:dd:ee:ff", "test", "1.2.3")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("update request failed: 418 I'm a teapot"))
+				Expect(err.Error()).To(Equal("update request failed: 418 I'm a teapot: "))
 			})
 		})
 	})

@@ -4,41 +4,43 @@ package internalfakes
 import (
 	"sync"
 
-	"github.com/petewall/ota-service/v2/internal"
+	"github.com/petewall/ota-service/internal"
 )
 
 type FakeUpdater struct {
-	UpdateStub        func(string, *internal.Firmware) (*internal.Firmware, error)
+	UpdateStub        func(string, string, string) ([]byte, error)
 	updateMutex       sync.RWMutex
 	updateArgsForCall []struct {
 		arg1 string
-		arg2 *internal.Firmware
+		arg2 string
+		arg3 string
 	}
 	updateReturns struct {
-		result1 *internal.Firmware
+		result1 []byte
 		result2 error
 	}
 	updateReturnsOnCall map[int]struct {
-		result1 *internal.Firmware
+		result1 []byte
 		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeUpdater) Update(arg1 string, arg2 *internal.Firmware) (*internal.Firmware, error) {
+func (fake *FakeUpdater) Update(arg1 string, arg2 string, arg3 string) ([]byte, error) {
 	fake.updateMutex.Lock()
 	ret, specificReturn := fake.updateReturnsOnCall[len(fake.updateArgsForCall)]
 	fake.updateArgsForCall = append(fake.updateArgsForCall, struct {
 		arg1 string
-		arg2 *internal.Firmware
-	}{arg1, arg2})
+		arg2 string
+		arg3 string
+	}{arg1, arg2, arg3})
 	stub := fake.UpdateStub
 	fakeReturns := fake.updateReturns
-	fake.recordInvocation("Update", []interface{}{arg1, arg2})
+	fake.recordInvocation("Update", []interface{}{arg1, arg2, arg3})
 	fake.updateMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2)
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -52,41 +54,41 @@ func (fake *FakeUpdater) UpdateCallCount() int {
 	return len(fake.updateArgsForCall)
 }
 
-func (fake *FakeUpdater) UpdateCalls(stub func(string, *internal.Firmware) (*internal.Firmware, error)) {
+func (fake *FakeUpdater) UpdateCalls(stub func(string, string, string) ([]byte, error)) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = stub
 }
 
-func (fake *FakeUpdater) UpdateArgsForCall(i int) (string, *internal.Firmware) {
+func (fake *FakeUpdater) UpdateArgsForCall(i int) (string, string, string) {
 	fake.updateMutex.RLock()
 	defer fake.updateMutex.RUnlock()
 	argsForCall := fake.updateArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeUpdater) UpdateReturns(result1 *internal.Firmware, result2 error) {
+func (fake *FakeUpdater) UpdateReturns(result1 []byte, result2 error) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = nil
 	fake.updateReturns = struct {
-		result1 *internal.Firmware
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }
 
-func (fake *FakeUpdater) UpdateReturnsOnCall(i int, result1 *internal.Firmware, result2 error) {
+func (fake *FakeUpdater) UpdateReturnsOnCall(i int, result1 []byte, result2 error) {
 	fake.updateMutex.Lock()
 	defer fake.updateMutex.Unlock()
 	fake.UpdateStub = nil
 	if fake.updateReturnsOnCall == nil {
 		fake.updateReturnsOnCall = make(map[int]struct {
-			result1 *internal.Firmware
+			result1 []byte
 			result2 error
 		})
 	}
 	fake.updateReturnsOnCall[i] = struct {
-		result1 *internal.Firmware
+		result1 []byte
 		result2 error
 	}{result1, result2}
 }

@@ -58,7 +58,7 @@ test: lint test-units test-features
 SOURCES = $(shell find . -name "*.go" | grep -v "_test\." )
 
 build/ota-service: $(SOURCES) deps-modules
-	go build -o build/ota-service github.com/petewall/ota-service/v2
+	go build -o build/ota-service github.com/petewall/ota-service
 
 build: build/ota-service
 

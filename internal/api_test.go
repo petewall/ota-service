@@ -2,14 +2,14 @@ package internal_test
 
 import (
 	"fmt"
-	. "github.com/petewall/ota-service/v2/internal"
+	. "github.com/petewall/ota-service/internal"
+	. "github.com/petewall/ota-service/internal/internalfakes"
 	"net/http"
 	"net/http/httptest"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/onsi/gomega/gbytes"
-	. "github.com/petewall/ota-service/v2/internal/internalfakes"
 )
 
 var _ = Describe("API", func() {
@@ -86,10 +86,10 @@ var _ = Describe("API", func() {
 				Expect(res.Body.String()).To(Equal("failed to get update: update failed"))
 
 				Expect(updater.UpdateCallCount()).To(Equal(1))
-				mac, firmware := updater.UpdateArgsForCall(0)
+				mac, firmwareType, firmwareVersion := updater.UpdateArgsForCall(0)
 				Expect(mac).To(Equal("aa:bb:cc:dd:ee:ff"))
-				Expect(firmware.Type).To(Equal("bootstrap"))
-				Expect(firmware.Version).To(Equal("1.2.3"))
+				Expect(firmwareType).To(Equal("bootstrap"))
+				Expect(firmwareVersion).To(Equal("1.2.3"))
 			})
 		})
 
@@ -107,21 +107,16 @@ var _ = Describe("API", func() {
 				Expect(res.Code).To(Equal(http.StatusNotModified))
 
 				Expect(updater.UpdateCallCount()).To(Equal(1))
-				mac, firmware := updater.UpdateArgsForCall(0)
+				mac, firmwareType, firmwareVersion := updater.UpdateArgsForCall(0)
 				Expect(mac).To(Equal("aa:bb:cc:dd:ee:ff"))
-				Expect(firmware.Type).To(Equal("bootstrap"))
-				Expect(firmware.Version).To(Equal("1.2.3"))
+				Expect(firmwareType).To(Equal("bootstrap"))
+				Expect(firmwareVersion).To(Equal("1.2.3"))
 			})
 		})
 
 		When("the updater returns a firmware", func() {
 			BeforeEach(func() {
-				updater.UpdateReturns(&Firmware{
-					Type:    "bootstrap",
-					Version: "2.0.0",
-					Size:    100,
-					Data:    []byte("this is the firmware data"),
-				}, nil)
+				updater.UpdateReturns([]byte("this is the firmware data"), nil)
 			})
 
 			It("returns the firmware", func() {
@@ -135,10 +130,10 @@ var _ = Describe("API", func() {
 				Expect(res.Body.String()).To(Equal("this is the firmware data"))
 
 				Expect(updater.UpdateCallCount()).To(Equal(1))
-				mac, firmware := updater.UpdateArgsForCall(0)
+				mac, firmwareType, firmwareVersion := updater.UpdateArgsForCall(0)
 				Expect(mac).To(Equal("aa:bb:cc:dd:ee:ff"))
-				Expect(firmware.Type).To(Equal("bootstrap"))
-				Expect(firmware.Version).To(Equal("1.2.3"))
+				Expect(firmwareType).To(Equal("bootstrap"))
+				Expect(firmwareVersion).To(Equal("1.2.3"))
 			})
 		})
 	})

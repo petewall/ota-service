@@ -2,13 +2,13 @@ package internal
 
 import (
 	"fmt"
-)
 
-//go:generate counterfeiter -generate
+	d "github.com/petewall/device-service/lib"
+)
 
 //counterfeiter:generate . Updater
 type Updater interface {
-	Update(mac string, currentFirmware *Firmware) (*Firmware, error)
+	Update(mac, currentType, currentVersion string) ([]byte, error)
 }
 
 type UpdaterImpl struct {
@@ -16,12 +16,12 @@ type UpdaterImpl struct {
 	FirmwareService FirmwareService
 }
 
-func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, error) {
+func (u *UpdaterImpl) Update(mac, currentType, currentVersion string) ([]byte, error) {
 	if mac == "" {
 		return nil, fmt.Errorf("mac not set")
 	}
 
-	if currentFirmware == nil {
+	if currentType == "" {
 		return nil, fmt.Errorf("firmware not set")
 	}
 
@@ -31,13 +31,13 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 	}
 
 	if device == nil {
-		device = &Device{}
+		device = &d.Device{}
 	}
 
-	if device.IsDifferent(currentFirmware) {
-		device.CurrentFirmware = currentFirmware.Type
-		device.CurrentVersion = currentFirmware.Version
-		err = u.DeviceService.UpdateDevice(device)
+	if device.IsDifferent(currentType, currentVersion) {
+		device.Firmware = currentType
+		device.Version = currentVersion
+		err = u.DeviceService.UpdateDevice(mac, currentType, currentVersion)
 		if err != nil {
 			return nil, fmt.Errorf("unable to update device: %w", err)
 		}
@@ -46,30 +46,27 @@ func (u *UpdaterImpl) Update(mac string, currentFirmware *Firmware) (*Firmware, 
 	if device.AssignedFirmware != "" {
 		if device.AssignedVersion != "" {
 			// Pinned version
-			assigned := &Firmware{
-				Type:    device.AssignedFirmware,
-				Version: device.AssignedVersion,
-			}
-			if device.IsDifferent(assigned) {
+			if device.IsDifferent(device.AssignedFirmware, device.AssignedVersion) {
 				firmware, err := u.FirmwareService.GetFirmware(device.AssignedFirmware, device.AssignedVersion)
 				if err != nil {
-					return nil, fmt.Errorf("unable to get firmware: %w", err)
+					return nil, fmt.Errorf("unable to get firmware %s %s: %w", device.AssignedFirmware, device.AssignedVersion, err)
 				}
 
-				return firmware, nil
+				return u.FirmwareService.GetFirmwareData(firmware.Type, firmware.Version)
 			} else {
 				return nil, nil
 			}
 		}
 
 		// Floating version
-		firmware, err := u.FirmwareService.GetLatestFirmware(device.AssignedFirmware, device.AcceptsPrerelease)
+		firmwareList, err := u.FirmwareService.GetFirmwareByType(device.AssignedFirmware)
 		if err != nil {
-			return nil, fmt.Errorf("unable to get latest firmware: %w", err)
+			return nil, fmt.Errorf("unable to get firmware for type %s: %w", device.AssignedFirmware, err)
 		}
 
-		if device.IsOlderThan(firmware) {
-			return firmware, nil
+		firmware := firmwareList.GetLatest(false)
+		if device.IsOlderThan(firmware.Version) {
+			return u.FirmwareService.GetFirmwareData(firmware.Type, firmware.Version)
 		}
 	}
 

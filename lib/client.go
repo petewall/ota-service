@@ -39,7 +39,11 @@ func (c *Client) Update(mac, firmware, version string) ([]byte, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("update request failed: %s", res.Status)
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("update request failed: %s", res.Status)
+		}
+		return nil, fmt.Errorf("update request failed: %s: %s", res.Status, body)
 	}
 
 	body, err := io.ReadAll(res.Body)
