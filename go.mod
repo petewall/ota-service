@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.6.1
 	github.com/onsi/ginkgo/v2 v2.8.4
-	github.com/onsi/gomega v1.27.1
+	github.com/onsi/gomega v1.27.2
 	github.com/petewall/device-service v0.0.0-20230220164556-a4c0c7402696
 	github.com/petewall/firmware-service v0.0.0-20230220164503-5969209ad11f
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
