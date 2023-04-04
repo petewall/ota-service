@@ -13,7 +13,7 @@ require (
 	github.com/petewall/device-service v0.0.0-20230220164556-a4c0c7402696
 	github.com/petewall/firmware-service v0.0.0-20230220164503-5969209ad11f
 	github.com/phayes/freeport v0.0.0-20220201140144-74d24b5ae9f5
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 )
 
